@@ -1,4 +1,4 @@
-Solution F# 1 (Pierre) + Equivalent C#
+Solution F# 1 (Pierre)
 ================
 
 Voici ma solution en F# pour le problème de la ligne d'horizon.
