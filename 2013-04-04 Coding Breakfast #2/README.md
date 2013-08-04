@@ -1,6 +1,8 @@
 Coding breakfast #2: Le Monnayeur de parcmètre 
 ================
 
+([http://www.meetup.com/altnetfr/events/108937702/](http://www.meetup.com/altnetfr/events/108937702/ "Lien du Meetup"))
+
 Le stationnement est payant du lundi au samedi de 8h à 12h et de 14h à 18h, sauf les jours fériés et sauf au mois d’Août
 
 Tarifs : 20 minutes = 1€, 1h=2€, 2h=3€, ½ jour=5€, 1 jour=8€

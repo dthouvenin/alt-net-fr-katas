@@ -1,5 +1,6 @@
 Coding Breakfast #4 : Le décodeur de SMS
 ================
+([http://www.meetup.com/altnetfr/events/116747412/](http://www.meetup.com/altnetfr/events/116747412/ "Lien du Meetup"))
 
 Certaines personnes compressent le texte des messages en ne conservant que les voyelles qui débutent un mot, en supprimant les accentuations et en remplaçant les lettres doublées par des lettres simples.
 
