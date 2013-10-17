@@ -2,23 +2,23 @@
 #include<stdio.h>
 #include <stdbool.h>
 #include<stdlib.h>
-int l;
-int n;
-int max,min;
+unsigned long long l;
+unsigned long long n;
+unsigned long long max,min;
 int * digitsBuffer;
 
 typedef struct Listelt {
-int val;
+unsigned long long val;
 struct Listelt * next;
 } Listelt;
 
 Listelt * list;
-bool next(int * i, int * j, int * validDigitPos, int * currentMaxDigit, int * currentV) {
+bool next(unsigned long long * i, unsigned long long * j, int * validDigitPos, int * currentMaxDigit, unsigned long long * currentV) {
 	if(*j != min) {
 		if(*validDigitPos < l) { //okDigit positionned on j
 			if((*j)%(int)pow(10,(*validDigitPos+1))==0) {
 				//check if validDigitPos incremented :
-				if ( (*j / (int)pow(10,(*validDigitPos+1)))%10 > *currentMaxDigit + 1 ) {
+				if ( (*j / (unsigned long long)pow(10,(*validDigitPos+1)))%10 > *currentMaxDigit + 1 ) {
 					*j = *j - (10-*currentMaxDigit);
 					(*validDigitPos)=0;
 				} else {
@@ -33,9 +33,9 @@ bool next(int * i, int * j, int * validDigitPos, int * currentMaxDigit, int * cu
 		}
 	} else { // *j == min
 		if(*i > min) {
-			int pos = (*validDigitPos >= l? *validDigitPos-l:0);
+			unsigned long long pos = (*validDigitPos >= l? *validDigitPos-l:0);
 			if((*i)%(int)pow(10,(pos+1))==0) {
-				if((*i / (int)pow(10,(pos+1)))%10 > *currentMaxDigit + 1) {
+				if((*i / (unsigned long long)pow(10,(pos+1)))%10 > *currentMaxDigit + 1) {
 					*validDigitPos=0;
 				} else {
 					(*validDigitPos)++;			
@@ -56,15 +56,15 @@ bool next(int * i, int * j, int * validDigitPos, int * currentMaxDigit, int * cu
 			//update currentV
 			*currentV = (*i)*(*j);
 			//update currentMaxDigit :
-			int maxDigit = (*currentV)/(pow(10,(l*2-1)));
+			unsigned long long maxDigit = (*currentV)/(pow(10,(l*2-1)));
 			if(maxDigit < *currentMaxDigit) {
 				//Value at validDigitPos :
 				if(*validDigitPos<l) {
-					if(*j/(int)pow(10,*validDigitPos)%10 > maxDigit) {
+					if(*j/(unsigned long long)pow(10,*validDigitPos)%10 > maxDigit) {
 						*validDigitPos = 0;					
 					}				
 				} else {
-					if(*i/(int)pow(10,*validDigitPos-l)%10 > maxDigit) {
+					if(*i/(unsigned long long)pow(10,*validDigitPos-l)%10 > maxDigit) {
 						*validDigitPos = 0;					
 					}
 				}
@@ -76,22 +76,22 @@ bool next(int * i, int * j, int * validDigitPos, int * currentMaxDigit, int * cu
 	}
 	return true;
 }
-bool checkVampire(int i, int j) {
+bool checkVampire(unsigned long long i, unsigned long long j) {
 	if(i%10==0 && j%10==0 ) {
 		return false;	
 	}
 	int k;
-	int v = i*j;
+	unsigned long long v = i*j;
 	if((v/(int)pow(10,n-1))%10 == 0) {
 		return false;	
 	}
-	int ijconcat = i*(int)pow(10,l) + j;
+	unsigned long long ijconcat = i*(int)pow(10,l) + j;
 	for(k=0;k<10;k++) {
 		digitsBuffer[k] = 0;
 	}
 	for(k=0;k<n;k++) {
-		int digit = (v/(int)pow(10,k))%10;
-		int ijdigit = (ijconcat/(int)pow(10,k))%10;
+		int digit = (v/(unsigned long long)pow(10,k))%10;
+		int ijdigit = (ijconcat/(unsigned long long)pow(10,k))%10;
 		
 		(digitsBuffer[digit])++;
 		(digitsBuffer[ijdigit])--;
@@ -102,7 +102,7 @@ bool checkVampire(int i, int j) {
 	}
 	return true;	
 }
-int vampires(int n_) {
+int vampires(unsigned long long n_) {
 	n=n_;
 	list = NULL;
 	digitsBuffer = malloc(10*sizeof(int));
@@ -110,20 +110,18 @@ int vampires(int n_) {
 	l = n/2;
 	max = pow(10,l)-1;
 	min = pow(10,(l-1));
-	int currentV=(pow(10,l)-1) * (pow(10,l)-1);
+	unsigned long long currentV=(pow(10,l)-1) * (pow(10,l)-1);
 	int currentMaxDigit = currentV/pow(10,(n-1));
-	int iContainsDigit = -1;
-	int i = max;
-	int j = max;
+	unsigned long long i = max;
+	unsigned long long j = max;
 	int validDigitPos = 0;
-	int validDigitValue = 9;
 	int numVampires = 0;
 
 	while(next(&i, &j, &validDigitPos, &currentMaxDigit, &currentV)) {
 		//printf("%d %d %d %d %d\n",i,j,validDigitPos,currentMaxDigit,i*j);
 		// check vampireness :
 		if(checkVampire(i,j) == true) {
-			int v = i*j;
+			unsigned long long v = i*j;
 			if(list != NULL) {
 				Listelt * it = list;
 				while(it->next != NULL && it->next->val < v) {
@@ -144,7 +142,7 @@ int vampires(int n_) {
 				list->val = v;
 				numVampires++;			
 			}
-			printf("Vampire %d = %d * %d\n",i*j,i,j);
+			printf("Vampire %llu = %llu * %llu\n",i*j,i,j);
 		}
 		if(currentMaxDigit == 0) break;
 	}
