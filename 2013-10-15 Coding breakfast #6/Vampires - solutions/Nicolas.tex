@@ -50,8 +50,8 @@ Pour tout $k$ tel que $k > f(i,i)$, alors $D_{f(i,i)}\geq D_k$
 
 Cette constatation nous permet d'améliorer l'algorithme brute force pour trouver les nombres vampires :
 
-Il suffit de monitorer les digits $D_f(i,i)$ et d'exclure les couples $(k,l)<(i,i)$ si $k$ et $l$ sont des nombres dont tout les digits sont strictement supérieurs à $D_f(i,i)$, ce test peut être fait de manière efficace ($O(1)$) en monitorant la position dans le couple du digit de poids le plus fort qui permet de ne pas exclure ce couple.
-Par ailleurs, si $D_f(i,i) = 0$, alors le nombre de digit représentant $V_f(i,i)$ est inférieur à $n$ et l'algorithme s'arrête.
+Il suffit de monitorer les digits $D_f(i,i)$ et d'exclure les couples $(k,l)<(i,i)$ si $k$ et $l$ sont des nombres dont tout les digits sont strictement supérieurs à $D_{f(i,i)}$, ce test peut être fait de manière efficace ($O(1)$) en monitorant la position dans le couple du digit de poids le plus fort qui permet de ne pas exclure ce couple.
+Par ailleurs, si $D_{f(i,i)} = 0$, alors le nombre de digit représentant $V_f(i,i)$ est inférieur à $n$ et l'algorithme s'arrête.
 \newline
 
 Ci dessous les nombres d'itérations pour le brute force comparé au nombre d'itérations en excluant les couples selon notre critère :
