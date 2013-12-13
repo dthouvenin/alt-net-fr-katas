@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace NumeroBis
 {
@@ -35,7 +36,12 @@ namespace NumeroBis
             return nombreRomain.Length > 1 ? nombreRomain.Substring(1): string.Empty;
         }
 
-        public int CombienVaut(string nombreRomain)
+        public bool EstNombreValable(string nombreRomain)
+        {
+            return Regex.IsMatch(nombreRomain, @"^M{0,4}(CM)?D{0,3}(CD)?C{0,3­}(XC)?L{0,3}(XL)?X{0,3}(IX)?V{0,3}­(IV)?I{0,3}$");
+        }
+
+        private int Convertit(string nombreRomain)
         {
             if (string.IsNullOrWhiteSpace(nombreRomain))
                 return 0;
@@ -44,14 +50,24 @@ namespace NumeroBis
             if (string.IsNullOrWhiteSpace(reste))
                 return chiffre;
             var prochainChiffre = ValeurChiffre(reste[0]);
-            if(prochainChiffre > chiffre)
+            if (prochainChiffre > chiffre)
             {
                 // valable uniquement si 10x supérieur et chiffre actuel unitaire (I, X, C, M...)
                 if (prochainChiffre > 10 * chiffre)
                     throw new ArgumentException("Ceci n'est pas un nombre Romain correct");
-                return CombienVaut(reste) - chiffre;
-            } 
-            return CombienVaut(reste) + chiffre;             
+                return Convertit(reste) - chiffre;
+            }
+            return Convertit(reste) + chiffre;
+        }
+
+
+        public int CombienVaut(string nombreRomain)
+        {
+            if (string.IsNullOrWhiteSpace(nombreRomain))
+                return 0;
+            if(!EstNombreValable(nombreRomain))
+                throw new ArgumentException("Ceci n'est pas un nombre Romain correct");
+            return Convertit(nombreRomain);
         }
     }
 }

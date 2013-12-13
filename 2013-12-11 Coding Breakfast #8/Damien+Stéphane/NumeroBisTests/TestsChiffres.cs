@@ -15,7 +15,21 @@ namespace NumeroBisTests
             var res = scribe.CombienVaut(romain);
             Assert.AreEqual(expected, res);
         }
-        
+
+        protected void AssertIsValid(string romain)
+        {
+            var scribe = new Scribe();
+            var res = scribe.EstNombreValable(romain);
+            Assert.IsTrue(res);
+        }
+
+        protected void AssertIsInvalid(string romain)
+        {
+            var scribe = new Scribe();
+            var res = scribe.EstNombreValable(romain);
+            Assert.IsFalse(res);
+        }
+
     }
 
     [TestClass]
