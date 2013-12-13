@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="AdditionChiffres.cs" />
     <Compile Include="CasFoireux.cs" />
-    <Compile Include="EcrituresValides.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Soustraction.cs" />
     <Compile Include="TestsChiffres.cs" />

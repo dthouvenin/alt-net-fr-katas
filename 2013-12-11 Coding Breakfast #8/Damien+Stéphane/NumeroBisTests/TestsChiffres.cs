@@ -14,27 +14,13 @@ namespace NumeroBisTests
             var scribe = new Scribe();
             var res = scribe.CombienVaut(romain);
             Assert.AreEqual(expected, res);
-        }
-
-        protected void AssertIsValid(string romain)
-        {
-            var scribe = new Scribe();
-            var res = scribe.EstNombreValable(romain);
-            Assert.IsTrue(res);
-        }
-
-        protected void AssertIsInvalid(string romain)
-        {
-            var scribe = new Scribe();
-            var res = scribe.EstNombreValable(romain);
-            Assert.IsFalse(res);
-        }
-
+        }        
     }
 
     [TestClass]
     public class TestsChiffres: TestsBase
     {
+        // ReSharper disable InconsistentNaming
 
         [TestMethod]
         public void I_Vaut_Un()
@@ -77,7 +63,6 @@ namespace NumeroBisTests
             AssertEquals(1000, "M");
         }
 
-
-
+        // ReSharper restore InconsistentNaming
     }
 }

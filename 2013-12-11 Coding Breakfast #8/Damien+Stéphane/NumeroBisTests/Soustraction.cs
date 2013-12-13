@@ -9,6 +9,8 @@ namespace NumeroBisTests
     [TestClass]
     public class Soustraction: TestsBase
     {
+        // ReSharper disable InconsistentNaming
+
         [TestMethod]
         public void IX_Vaut_Neuf()
         {
@@ -27,5 +29,6 @@ namespace NumeroBisTests
             AssertEquals(1974, "MCMLXXIV");
         }
 
+        // ReSharper restore InconsistentNaming
     }
 }

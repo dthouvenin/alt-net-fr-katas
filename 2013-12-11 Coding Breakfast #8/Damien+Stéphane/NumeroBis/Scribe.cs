@@ -11,7 +11,7 @@ namespace NumeroBis
 
         private int ValeurChiffre(char c)
         {
-            switch(c)
+            switch (c)
             {
                 case 'I':
                     return 1;
@@ -31,43 +31,45 @@ namespace NumeroBis
             throw new ArgumentOutOfRangeException("c", c, "Chiffre non reconnu");
         }
 
-        private string Reste(string nombreRomain)
-        {
-            return nombreRomain.Length > 1 ? nombreRomain.Substring(1): string.Empty;
-        }
-
-        public bool EstNombreValable(string nombreRomain)
-        {
-            return Regex.IsMatch(nombreRomain, @"^M{0,4}(CM)?D{0,3}(CD)?C{0,3­}(XC)?L{0,3}(XL)?X{0,3}(IX)?V{0,3}­(IV)?I{0,3}$");
-        }
-
-        private int Convertit(string nombreRomain)
-        {
-            if (string.IsNullOrWhiteSpace(nombreRomain))
-                return 0;
-            var reste = Reste(nombreRomain);
-            var chiffre = ValeurChiffre(nombreRomain[0]);
-            if (string.IsNullOrWhiteSpace(reste))
-                return chiffre;
-            var prochainChiffre = ValeurChiffre(reste[0]);
-            if (prochainChiffre > chiffre)
-            {
-                // valable uniquement si 10x supérieur et chiffre actuel unitaire (I, X, C, M...)
-                if (prochainChiffre > 10 * chiffre)
-                    throw new ArgumentException("Ceci n'est pas un nombre Romain correct");
-                return Convertit(reste) - chiffre;
-            }
-            return Convertit(reste) + chiffre;
-        }
-
-
         public int CombienVaut(string nombreRomain)
         {
-            if (string.IsNullOrWhiteSpace(nombreRomain))
-                return 0;
-            if(!EstNombreValable(nombreRomain))
-                throw new ArgumentException("Ceci n'est pas un nombre Romain correct");
-            return Convertit(nombreRomain);
+            var total = 0;
+            var dernierChiffre = 0;
+            var repetitions = 0;
+            var maxSoustracteur = 100;
+            for (int i = 0; i < nombreRomain.Length; i++)
+            {
+                var chiffre = ValeurChiffre(nombreRomain[i]);
+                if (dernierChiffre == 0)
+                {
+                    total = dernierChiffre = chiffre;
+                    continue;
+                }
+                if (chiffre == dernierChiffre)
+                {
+                    repetitions += 1;
+                    if (repetitions >= 3 && chiffre<1000)
+                        throw new ArgumentException("Ceci n'est pas un nombre Romain correct : un même chiffre ne peut pas être répété plus de 3 fois, sauf M");
+                }
+                else
+                {
+                    if (chiffre > dernierChiffre)
+                    {
+                        if (repetitions > 0)
+                            throw new ArgumentException("Ceci n'est pas un nombre Romain correct: un même soustracteur ne peut être employé qu'une seule fois");
+                        if (chiffre > 10*dernierChiffre)
+                            throw new ArgumentException("Ceci n'est pas un nombre Romain correct: le soustracteur ne peut être que l'unité inférieure");
+                        if(dernierChiffre > maxSoustracteur)
+                            throw new ArgumentException("Ceci n'est pas un nombre Romain correct: après une soustraction, les chiffres ne peuvent qu'inférieurs d'un ordre");
+                        total -= 2*dernierChiffre;
+                        maxSoustracteur = dernierChiffre / 10;
+                    }
+                    repetitions = 0;
+                }
+                dernierChiffre = chiffre;
+                total += chiffre;
+            }
+            return total;
         }
     }
 }

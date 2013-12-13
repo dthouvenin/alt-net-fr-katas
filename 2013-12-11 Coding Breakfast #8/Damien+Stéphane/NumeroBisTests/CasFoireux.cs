@@ -9,6 +9,8 @@ namespace NumeroBisTests
     [TestClass]
     public class CasFoireux: TestsBase
     {
+        // ReSharper disable InconsistentNaming
+        
         [TestMethod, ExpectedException(typeof(ArgumentException), "Ce texte n'est pas un nombre romain valide et aurait dû lever une exception", AllowDerivedTypes = true)]
         public void IL_n_est_pas_valable()
         {
@@ -42,5 +44,7 @@ namespace NumeroBisTests
         {
             AssertEquals(13, "IXIV");
         }
+
+        // ReSharper restore InconsistentNaming
     }
 }
