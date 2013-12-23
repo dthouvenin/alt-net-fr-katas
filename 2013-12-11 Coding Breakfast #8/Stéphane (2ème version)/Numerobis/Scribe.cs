@@ -75,8 +75,34 @@ namespace Numerobis
 
         void Verify(int ArabicNumber, string RomainNumber)
         {
+            string My = ArabicNumber.ToString();
+            string RetranslatedValue = string.Empty;
             // Reconvertion en chiffres romains pour vérifier
-            //throw new ArgumentException("An error occured while translating number");
+            for (int i = My.Length, j = 1; i > 0; i--, j++)
+            {
+                int number = int.Parse(My[i - 1].ToString());
+                if (number != 0)
+                {
+                    // represente le format a traduire A, AA, BA, etc...
+                    string local = Enum.GetName(typeof(NumerobisUtil.RomainFormat), number);
+                    // la lettre A represente les chiffres 1, 10, 100 et 1000
+                    string A = Enum.GetName(typeof(NumerobisUtil.RomainSequenceA), j);
+                    if (A != null)
+                        local = local.Replace('A', A[0]);
+                    // la lettre B represente les chiffres 5, 50 et 500
+                    string B = Enum.GetName(typeof(NumerobisUtil.RomainSequenceB), j);
+                    if (B != null)
+                        local = local.Replace('B', B[0]);
+                    // la lettre C étant éguale à 100 et la lettre D à 500 alors E est la prochaine lettre vacante
+                    // la lettre E est la representation d'un chiffre de la dizaine supérieur
+                    string C = Enum.GetName(typeof(NumerobisUtil.RomainSequenceA), j + 1);
+                    if (C != null)
+                        local = local.Replace('E', C[0]);
+                    RetranslatedValue = local + RetranslatedValue;
+                }
+            }
+            if (!RetranslatedValue.Equals(RomainNumber))
+                throw new ArgumentException(InvalidSequenceErrorMessage);
         }
     }
 }
