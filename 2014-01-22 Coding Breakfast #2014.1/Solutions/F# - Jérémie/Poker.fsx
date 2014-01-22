@@ -62,8 +62,7 @@ let (|QuinteFlush|_|) hand =
 
 let groupCards hand =
      hand
-     |> Seq.groupBy value
-     |> Seq.map (fun (v,l) -> v, Seq.length l)
+     |> Seq.countBy value
      |> Seq.sortBy snd
      |> Seq.toList
      |> List.rev
@@ -71,7 +70,7 @@ let groupCards hand =
 
 let (|Full|_|) hand=
     match groupCards hand with
-     | (b,3) :: (p,2) :: _ -> Some(b,p)
+     | (b,3) :: (p,2) :: [] -> Some(b,p)
      | _ -> None 
 
 let (|Square|_|) hand = 
@@ -81,11 +80,12 @@ let (|Square|_|) hand =
 
 let (|Brelan|_|) hand =
     match groupCards hand with
-    | (b,3) :: _ -> Some(b)
+    | (b,3) :: (_,1) :: _ -> Some(b)
     | _ -> None
+
 let (|Pair|_|) hand =
     match groupCards hand with
-    | (p,2) :: _ -> Some(p)
+    | (p,2) :: (_,1) :: _ -> Some(p)
     | _ -> None
 
 let (|DoublePair|_|) hand =
