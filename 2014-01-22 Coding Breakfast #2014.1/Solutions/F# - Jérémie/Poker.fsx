@@ -3,10 +3,14 @@
     | Heart
     | Club
     | Diamond
-let (|Ace|_|) v = if v = 14 then Some() else None
-let (|King|_|) v = if v = 13 then Some() else None
-let (|Queen|_|) v = if v = 12 then Some() else None
-let (|Jack|_|) v = if v = 11 then Some() else None
+
+let isValue n v = if v = n then Some() else None
+
+let (|Ace|_|) = isValue 14
+let (|King|_|) = isValue 13
+let (|Queen|_|) = isValue 12
+let (|Jack|_|) = isValue 11
+
 let svalue _ = 
         function
         | Ace -> "A"
@@ -14,6 +18,7 @@ let svalue _ =
         | Queen -> "Q"
         | Jack -> "J"
         | n -> sprintf "%d" n
+
 let scolor _ = 
           function
           | Spade -> "\u2660"
@@ -21,16 +26,16 @@ let scolor _ =
           | Club -> "\u2663"
           | Diamond -> "\u2666" 
 
-type Card =
-    | Card of Color * int
-    override this.ToString() =
-        match this with Card(c,v) -> sprintf "%a%a" svalue v scolor c
-let color = function Card(c,_) -> c
-let value = function Card(_,v) -> v
-let sort = List.sortBy value
+type Card = Card of Color * int
+
+let color (Card(c,_)) =  c
+let value (Card(_,v)) =  v
 
 let (|Color|) = color
 let (|Value|) = value
+
+let sort = List.sortBy value
+
 
 let (|HandColor|_|) hand =
    let rec loop firstColor =
@@ -60,7 +65,7 @@ let (|QuinteFlush|_|) hand =
    | Sequence(v) & HandColor(c) -> Some(c,v)
    | _ -> None
 
-let groupCards hand =
+let (|GroupCards|) hand =
      hand
      |> Seq.countBy value
      |> Seq.sortBy snd
@@ -69,30 +74,34 @@ let groupCards hand =
 
 
 let (|Full|_|) hand=
-    match groupCards hand with
-     | (b,3) :: (p,2) :: [] -> Some(b,p)
+    match hand with
+     | GroupCards ((b,3) :: (p,2) :: []) -> Some(b,p)
      | _ -> None 
 
 let (|Square|_|) hand = 
-    match groupCards hand with
-    | (s, 4) :: _ -> Some(s)
+    match hand with
+    | GroupCards ((s, 4) :: _) -> Some(s)
     | _ -> None
 
 let (|Brelan|_|) hand =
-    match groupCards hand with
-    | (b,3) :: (_,1) :: _ -> Some(b)
+    match hand with
+    | GroupCards ((b,3) :: (_,1) :: _) -> Some(b)
     | _ -> None
 
 let (|Pair|_|) hand =
-    match groupCards hand with
-    | (p,2) :: (_,1) :: _ -> Some(p)
+    match hand with
+    | GroupCards ((p,2) :: (_,1) :: _) -> Some(p)
     | _ -> None
 
 let (|DoublePair|_|) hand =
-    match groupCards hand with
-    | (p1, 2) :: (p2,2) :: _ -> Some(max p1 p2, min p1 p2)
+    match hand with
+    | GroupCards((p1, 2) :: (p2,2) :: _) -> Some(max p1 p2, min p1 p2)
     | _ -> None
-   
+
+let (|High|_|) hand =
+    match hand with
+    | GroupCards ((_,1) :: _) ->  Some(List.maxBy value hand)
+    | _ -> None
 let showHand hand =
     match sort hand with
     | QuinteFlush(c,v) -> sprintf "Quint Flush of %a%a" svalue v scolor c
@@ -103,6 +112,7 @@ let showHand hand =
     | Brelan(b) -> sprintf "Brelan of %a" svalue b
     | DoublePair(p1, p2) -> sprintf "Double pair of %a and %a" svalue p1 svalue p2
     | Pair(p) -> sprintf "Pair of %a" svalue p
+    | High(Card(c,v)) -> sprintf "Highest %a%a" svalue v scolor c
     | _ -> hand |> Seq.map (fun (Card(c,v)) -> sprintf "%a%a" svalue v scolor c) |> String.concat " "
     |> printfn "%s"
 
