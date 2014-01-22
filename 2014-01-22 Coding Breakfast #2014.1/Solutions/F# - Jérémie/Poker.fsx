@@ -225,7 +225,7 @@ let showHand hand =
     |> printfn "%s"
 
 (**
-## Testes
+## Tests
 
 Les examples utilisent les fonctions `h`,`s`,`c` et `d` pour
 `Hear`, `Spade`, `Club` et `Diamond`. Elles prennent une valeur et 
