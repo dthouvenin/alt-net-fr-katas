@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- 
+      The F# Poker Kata par Jérémie, Thomas et Damien
+ parameters will be replaced with the 
+      document title extracted from the <h1> element or
+      file name, if there is no <h1> heading
+    -->
+    <title>F# Poker Kata par Jérémie, Thomas et Damien
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="content/style.css" />
+    <script src="content/tips.js" type="text/javascript"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="row" style="margin-top:30px">
+        <div class="span1"></div>
+        <div class="span10" id="main">
+          <h1>F# Poker Kata par Jérémie, Thomas et Damien</h1>
+
+<p><em>j'espere que je ne me trompe pas dans les prénoms...</em></p>
+
+<p><a href="https://github.com/dthouvenin/alt-net-fr-katas/tree/master/2014-01-22%20Coding%20Breakfast%20%232014.1/Solutions/F%23%20-%20J%C3%A9r%C3%A9mie">Lien GitHub</a></p>
+
+<p><strong>Un mot sur FSharp.Formatting et literate F#</strong></p>
+
+<p>La doc est totalement générée à partir du Markdown contenu dans le fichier Poker.fsx.</p>
+
+<p>Ce fichier fsx est cependant un fichier F# script valide qui peut être executé dans fsi !</p>
+
+<p>Plus d'infos sur <a href="http://tpetricek.github.io/FSharp.Formatting/index.html">le site de FSharp.Formatting</a></p>
+
+<h2>Overview</h2>
+
+<p>Les couleurs sont représentée par une discriminated union:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span class="i">Color</span> <span class="o">=</span>
+    | <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">Spade</span>
+    | <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Heart</span>
+    | <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Club</span>
+    | <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">Diamond</span></pre>
+</td>
+</tr>
+</table>
+
+<p>On représente les valeurs des cartes de 2 à 14 comme ceci :</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="n">2</span>  <span class="n">3</span>  <span class="n">4</span>  <span class="n">5</span>  <span class="n">6</span>  <span class="n">7</span>  <span class="n">8</span>  <span class="n">9</span> <span class="n">10</span>  <span class="i">J</span>  <span class="i">Q</span>  <span class="i">K</span>  <span class="i">A</span>
+<span class="n">2</span>  <span class="n">3</span>  <span class="n">4</span>  <span class="n">5</span>  <span class="n">6</span>  <span class="n">7</span>  <span class="n">8</span>  <span class="n">9</span> <span class="n">10</span> <span class="n">11</span> <span class="n">12</span> <span class="n">13</span> <span class="n">14</span></pre>
+</td>
+</tr>
+</table>
+
+<p>L'as vaut 14 pour simplifier la plupart des cas,
+on a juste un cas particulier pour la suite.</p>
+
+<p>Les actives patterns <code>Ace</code>, <code>King</code>, <code>Queen</code>, <code>Jack</code> permettent d'utiliser
+les noms dans les patterns matching au lieu des valeurs 14, 11, 12 et 13.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">isValue</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">n</span> <span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="i">v</span> <span class="o">=</span> <span class="k">if</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">v</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 9)" onmouseover="showTip(event, 'fs6', 9)" class="i">n</span> <span class="k">then</span> <span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">Some</span>() <span class="k">else</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">None</span>
+
+<span class="k">let</span> (|<span class="i">Ace</span>|_|) <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 12)" onmouseover="showTip(event, 'fs5', 12)" class="i">isValue</span> <span class="n">14</span>
+<span class="k">let</span> (|<span class="i">King</span>|_|) <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 13)" onmouseover="showTip(event, 'fs5', 13)" class="i">isValue</span> <span class="n">13</span>
+<span class="k">let</span> (|<span class="i">Queen</span>|_|) <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 14)" onmouseover="showTip(event, 'fs5', 14)" class="i">isValue</span> <span class="n">12</span>
+<span class="k">let</span> (|<span class="i">Jack</span>|_|) <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 15)" onmouseover="showTip(event, 'fs5', 15)" class="i">isValue</span> <span class="n">11</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Une carte est simplement un tuple couleur, value:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs10', 16)" onmouseover="showTip(event, 'fs10', 16)" class="i">Card</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 17)" onmouseover="showTip(event, 'fs10', 17)" class="i">Card</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs11', 18)" onmouseover="showTip(event, 'fs11', 18)" class="i">Color</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs12', 19)" onmouseover="showTip(event, 'fs12', 19)" class="i">int</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Les pattern matchings <code>Color</code> et <code>Value</code> matchent n'importe quelle carte
+et en donne la couleur ou la valeur.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 20)" onmouseover="showTip(event, 'fs13', 20)" class="i">color</span> (<span onmouseout="hideTip(event, 'fs10', 21)" onmouseover="showTip(event, 'fs10', 21)" class="i">Card</span>(<span onmouseout="hideTip(event, 'fs14', 22)" onmouseover="showTip(event, 'fs14', 22)" class="i">c</span>,_)) <span class="o">=</span>  <span onmouseout="hideTip(event, 'fs14', 23)" onmouseover="showTip(event, 'fs14', 23)" class="i">c</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs15', 24)" onmouseover="showTip(event, 'fs15', 24)" class="i">value</span> (<span onmouseout="hideTip(event, 'fs10', 25)" onmouseover="showTip(event, 'fs10', 25)" class="i">Card</span>(_,<span onmouseout="hideTip(event, 'fs16', 26)" onmouseover="showTip(event, 'fs16', 26)" class="i">v</span>)) <span class="o">=</span>  <span onmouseout="hideTip(event, 'fs16', 27)" onmouseover="showTip(event, 'fs16', 27)" class="i">v</span>
+
+<span class="k">let</span> (|<span onmouseout="hideTip(event, 'fs11', 28)" onmouseover="showTip(event, 'fs11', 28)" class="i">Color</span>|) <span class="o">=</span> <span onmouseout="hideTip(event, 'fs13', 29)" onmouseover="showTip(event, 'fs13', 29)" class="i">color</span>
+<span class="k">let</span> (|<span class="i">Value</span>|) <span class="o">=</span> <span onmouseout="hideTip(event, 'fs15', 30)" onmouseover="showTip(event, 'fs15', 30)" class="i">value</span></pre>
+</td>
+</tr>
+</table>
+
+<p>La main est une liste de <code>Card</code>.
+La plupart des fonctions ont besoin que la liste soit triée.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 31)" onmouseover="showTip(event, 'fs17', 31)" class="i">sort</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs18', 32)" onmouseover="showTip(event, 'fs18', 32)" class="i">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 33)" onmouseover="showTip(event, 'fs19', 33)" class="i">sortBy</span> <span onmouseout="hideTip(event, 'fs15', 34)" onmouseover="showTip(event, 'fs15', 34)" class="i">value</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>Couleur</h2>
+
+<p>L'active pattern <code>HandColor</code> indique si on a une couleur, et laquelle.</p>
+
+<p>Il trouve la couleur de la première carte et vérifie recursivement que toutes les autre ont la même couleur.</p>
+
+<p>Il retourne alors la couleur de la première carte.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+<span class="l">9: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">HandColor</span>|_|) <span onmouseout="hideTip(event, 'fs20', 35)" onmouseover="showTip(event, 'fs20', 35)" class="i">hand</span> <span class="o">=</span>
+   <span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs21', 36)" onmouseover="showTip(event, 'fs21', 36)" class="i">loop</span> <span onmouseout="hideTip(event, 'fs22', 37)" onmouseover="showTip(event, 'fs22', 37)" class="i">firstColor</span> <span class="o">=</span>
+       <span class="k">function</span>
+       | <span onmouseout="hideTip(event, 'fs23', 38)" onmouseover="showTip(event, 'fs23', 38)" class="i">Color</span>(<span onmouseout="hideTip(event, 'fs14', 39)" onmouseover="showTip(event, 'fs14', 39)" class="i">c</span>) <span class="o">::</span> <span onmouseout="hideTip(event, 'fs24', 40)" onmouseover="showTip(event, 'fs24', 40)" class="i">tail</span> <span class="k">when</span> <span onmouseout="hideTip(event, 'fs14', 41)" onmouseover="showTip(event, 'fs14', 41)" class="i">c</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs22', 42)" onmouseover="showTip(event, 'fs22', 42)" class="i">firstColor</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs21', 43)" onmouseover="showTip(event, 'fs21', 43)" class="i">loop</span> <span onmouseout="hideTip(event, 'fs22', 44)" onmouseover="showTip(event, 'fs22', 44)" class="i">firstColor</span> <span onmouseout="hideTip(event, 'fs24', 45)" onmouseover="showTip(event, 'fs24', 45)" class="i">tail</span>
+       | [] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 46)" onmouseover="showTip(event, 'fs8', 46)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs22', 47)" onmouseover="showTip(event, 'fs22', 47)" class="i">firstColor</span>
+       | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 48)" onmouseover="showTip(event, 'fs9', 48)" class="i">None</span>
+   <span class="k">match</span> <span onmouseout="hideTip(event, 'fs20', 49)" onmouseover="showTip(event, 'fs20', 49)" class="i">hand</span> <span class="k">with</span>
+   | <span onmouseout="hideTip(event, 'fs23', 50)" onmouseover="showTip(event, 'fs23', 50)" class="i">Color</span>(<span onmouseout="hideTip(event, 'fs14', 51)" onmouseover="showTip(event, 'fs14', 51)" class="i">c</span>) <span class="o">::</span> <span onmouseout="hideTip(event, 'fs24', 52)" onmouseover="showTip(event, 'fs24', 52)" class="i">tail</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs21', 53)" onmouseover="showTip(event, 'fs21', 53)" class="i">loop</span> <span onmouseout="hideTip(event, 'fs14', 54)" onmouseover="showTip(event, 'fs14', 54)" class="i">c</span> <span onmouseout="hideTip(event, 'fs24', 55)" onmouseover="showTip(event, 'fs24', 55)" class="i">tail</span>
+   | [] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 56)" onmouseover="showTip(event, 'fs9', 56)" class="i">None</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>Suite</h2>
+
+<p>L'active pattern <code>Sequence</code> indique si on a une suite, et quelle est la plus haute carte.</p>
+
+<p>Il fonctionne sur une main classée de la plus petite à la plus grande valeur.</p>
+
+<p>Il prend la valeur de la première (plus petite) carte, et vérifie recursivement que la
+carte suivante - 1 à la valeur de la précédente. Arrivé au bout, il sort la valeur de la dernière (plus forte) carte.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">Sequence</span>|_|) <span onmouseout="hideTip(event, 'fs20', 57)" onmouseover="showTip(event, 'fs20', 57)" class="i">hand</span> <span class="o">=</span>
+    <span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs25', 58)" onmouseover="showTip(event, 'fs25', 58)" class="i">loop</span> <span onmouseout="hideTip(event, 'fs26', 59)" onmouseover="showTip(event, 'fs26', 59)" class="i">previous</span> <span class="o">=</span>
+        <span class="k">function</span>
+        | <span onmouseout="hideTip(event, 'fs27', 60)" onmouseover="showTip(event, 'fs27', 60)" class="i">Value</span>(<span onmouseout="hideTip(event, 'fs16', 61)" onmouseover="showTip(event, 'fs16', 61)" class="i">v</span>) <span class="o">::</span> <span onmouseout="hideTip(event, 'fs24', 62)" onmouseover="showTip(event, 'fs24', 62)" class="i">tail</span> <span class="k">when</span> <span onmouseout="hideTip(event, 'fs26', 63)" onmouseover="showTip(event, 'fs26', 63)" class="i">previous</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs16', 64)" onmouseover="showTip(event, 'fs16', 64)" class="i">v</span><span class="o">-</span><span class="n">1</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs25', 65)" onmouseover="showTip(event, 'fs25', 65)" class="i">loop</span> <span onmouseout="hideTip(event, 'fs16', 66)" onmouseover="showTip(event, 'fs16', 66)" class="i">v</span> <span onmouseout="hideTip(event, 'fs24', 67)" onmouseover="showTip(event, 'fs24', 67)" class="i">tail</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Le cas particulier de la suite A 2 3 4 5 est assuré par une
+condition de sortie supplémentaire :</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+        <span class="c">// match the special case of A 2 3 4 5 as 2 3 4 5 14 !!</span>
+        | [<span onmouseout="hideTip(event, 'fs27', 68)" onmouseover="showTip(event, 'fs27', 68)" class="i">Value</span>(<span onmouseout="hideTip(event, 'fs28', 69)" onmouseover="showTip(event, 'fs28', 69)" class="i">Ace</span>)] <span class="k">when</span> <span onmouseout="hideTip(event, 'fs26', 70)" onmouseover="showTip(event, 'fs26', 70)" class="i">previous</span> <span class="o">=</span> <span class="n">5</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 71)" onmouseover="showTip(event, 'fs8', 71)" class="i">Some</span> <span class="n">5</span> </pre>
+</td>
+</tr>
+</table>
+
+<p>Le pattern en est là quand il a trouvé 2 3 4 5.
+Si la dernière carte est un as, on est en presence d'une suite à 5.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+        | [] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 72)" onmouseover="showTip(event, 'fs8', 72)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs26', 73)" onmouseover="showTip(event, 'fs26', 73)" class="i">previous</span>
+        | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 74)" onmouseover="showTip(event, 'fs9', 74)" class="i">None</span>
+    <span class="k">match</span> <span onmouseout="hideTip(event, 'fs20', 75)" onmouseover="showTip(event, 'fs20', 75)" class="i">hand</span> <span class="k">with</span>
+    | <span onmouseout="hideTip(event, 'fs27', 76)" onmouseover="showTip(event, 'fs27', 76)" class="i">Value</span> <span onmouseout="hideTip(event, 'fs16', 77)" onmouseover="showTip(event, 'fs16', 77)" class="i">v</span> <span class="o">::</span> <span onmouseout="hideTip(event, 'fs24', 78)" onmouseover="showTip(event, 'fs24', 78)" class="i">tail</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs25', 79)" onmouseover="showTip(event, 'fs25', 79)" class="i">loop</span> <span onmouseout="hideTip(event, 'fs16', 80)" onmouseover="showTip(event, 'fs16', 80)" class="i">v</span> <span onmouseout="hideTip(event, 'fs24', 81)" onmouseover="showTip(event, 'fs24', 81)" class="i">tail</span>
+    | [] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 82)" onmouseover="showTip(event, 'fs9', 82)" class="i">None</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>Quinte Flush</h2>
+
+<p>L'active pattern <code>QuinteFlush</code> indique si on a une suite et une couleur.</p>
+
+<p>On utilise <code>&amp;</code> pour combiner les deux active patterns.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">QuinteFlush</span>|_|) <span onmouseout="hideTip(event, 'fs20', 83)" onmouseover="showTip(event, 'fs20', 83)" class="i">hand</span> <span class="o">=</span>
+   <span class="k">match</span> <span onmouseout="hideTip(event, 'fs20', 84)" onmouseover="showTip(event, 'fs20', 84)" class="i">hand</span> <span class="k">with</span>
+   | <span onmouseout="hideTip(event, 'fs29', 85)" onmouseover="showTip(event, 'fs29', 85)" class="i">Sequence</span>(<span onmouseout="hideTip(event, 'fs16', 86)" onmouseover="showTip(event, 'fs16', 86)" class="i">v</span>) <span class="o">&amp;</span> <span onmouseout="hideTip(event, 'fs30', 87)" onmouseover="showTip(event, 'fs30', 87)" class="i">HandColor</span>(<span onmouseout="hideTip(event, 'fs14', 88)" onmouseover="showTip(event, 'fs14', 88)" class="i">c</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 89)" onmouseover="showTip(event, 'fs8', 89)" class="i">Some</span>(<span onmouseout="hideTip(event, 'fs14', 90)" onmouseover="showTip(event, 'fs14', 90)" class="i">c</span>,<span onmouseout="hideTip(event, 'fs16', 91)" onmouseover="showTip(event, 'fs16', 91)" class="i">v</span>)
+   | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 92)" onmouseover="showTip(event, 'fs9', 92)" class="i">None</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>Autres combinaisons</h2>
+
+<p>Pour les autres mains, on utilise l'active pattern <code>GroupCards</code>
+qui retourne une liste de paires (value,count) classée 
+par count décroissant.</p>
+
+<p>On matchera alors les counts de cette liste pour trouver
+les carrés, full, brelans, doubles paires et paires.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">GroupCards</span>|) <span onmouseout="hideTip(event, 'fs31', 93)" onmouseover="showTip(event, 'fs31', 93)" class="i">hand</span> <span class="o">=</span>
+     <span onmouseout="hideTip(event, 'fs31', 94)" onmouseover="showTip(event, 'fs31', 94)" class="i">hand</span>
+     <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs32', 95)" onmouseover="showTip(event, 'fs32', 95)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 96)" onmouseover="showTip(event, 'fs33', 96)" class="i">countBy</span> <span onmouseout="hideTip(event, 'fs15', 97)" onmouseover="showTip(event, 'fs15', 97)" class="i">value</span>
+     <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs32', 98)" onmouseover="showTip(event, 'fs32', 98)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 99)" onmouseover="showTip(event, 'fs34', 99)" class="i">sortBy</span> <span onmouseout="hideTip(event, 'fs35', 100)" onmouseover="showTip(event, 'fs35', 100)" class="i">snd</span>
+     <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs32', 101)" onmouseover="showTip(event, 'fs32', 101)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 102)" onmouseover="showTip(event, 'fs36', 102)" class="i">toList</span>
+     <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs18', 103)" onmouseover="showTip(event, 'fs18', 103)" class="i">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 104)" onmouseover="showTip(event, 'fs37', 104)" class="i">rev</span></pre>
+</td>
+</tr>
+</table>
+
+<h3>Carré</h3>
+
+<p>Le carré contient un groupe de 4 cartes identiques, et une carte seule</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">Square</span>|_|) <span class="o">=</span> 
+    <span class="k">function</span>
+    | <span onmouseout="hideTip(event, 'fs38', 105)" onmouseover="showTip(event, 'fs38', 105)" class="i">GroupCards</span> [<span onmouseout="hideTip(event, 'fs39', 106)" onmouseover="showTip(event, 'fs39', 106)" class="i">s</span>, <span class="n">4</span>; _] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 107)" onmouseover="showTip(event, 'fs8', 107)" class="i">Some</span>(<span onmouseout="hideTip(event, 'fs39', 108)" onmouseover="showTip(event, 'fs39', 108)" class="i">s</span>)
+    | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 109)" onmouseover="showTip(event, 'fs9', 109)" class="i">None</span></pre>
+</td>
+</tr>
+</table>
+
+<h3>Full</h3>
+
+<p>Le full contient un brelan et une paire</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">Full</span>|_|) <span class="o">=</span>
+     <span class="k">function</span>
+     | <span onmouseout="hideTip(event, 'fs38', 110)" onmouseover="showTip(event, 'fs38', 110)" class="i">GroupCards</span> [<span onmouseout="hideTip(event, 'fs40', 111)" onmouseover="showTip(event, 'fs40', 111)" class="i">b</span>,<span class="n">3</span>; <span onmouseout="hideTip(event, 'fs41', 112)" onmouseover="showTip(event, 'fs41', 112)" class="i">p</span>,<span class="n">2</span>] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 113)" onmouseover="showTip(event, 'fs8', 113)" class="i">Some</span>(<span onmouseout="hideTip(event, 'fs40', 114)" onmouseover="showTip(event, 'fs40', 114)" class="i">b</span>,<span onmouseout="hideTip(event, 'fs41', 115)" onmouseover="showTip(event, 'fs41', 115)" class="i">p</span>)
+     | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 116)" onmouseover="showTip(event, 'fs9', 116)" class="i">None</span> </pre>
+</td>
+</tr>
+</table>
+
+<h3>Brelan</h3>
+
+<p>Le brelan contient un groupe de 3 cartes identiques et 2 cartes seules</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">Brelan</span>|_|) <span class="o">=</span>
+    <span class="k">function</span>
+    | <span onmouseout="hideTip(event, 'fs38', 117)" onmouseover="showTip(event, 'fs38', 117)" class="i">GroupCards</span> [<span onmouseout="hideTip(event, 'fs40', 118)" onmouseover="showTip(event, 'fs40', 118)" class="i">b</span>,<span class="n">3</span>; _; _] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 119)" onmouseover="showTip(event, 'fs8', 119)" class="i">Some</span>(<span onmouseout="hideTip(event, 'fs40', 120)" onmouseover="showTip(event, 'fs40', 120)" class="i">b</span>)
+    | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 121)" onmouseover="showTip(event, 'fs9', 121)" class="i">None</span></pre>
+</td>
+</tr>
+</table>
+
+<h3>Double paire</h3>
+
+<p>La double paire contient deux paires, et une carte seule.</p>
+
+<p>On retourne la plus haute valeur en premier.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">DoublePair</span>|_|) <span class="o">=</span>
+    <span class="k">function</span>
+    | <span onmouseout="hideTip(event, 'fs38', 122)" onmouseover="showTip(event, 'fs38', 122)" class="i">GroupCards</span> [<span onmouseout="hideTip(event, 'fs42', 123)" onmouseover="showTip(event, 'fs42', 123)" class="i">p1</span>, <span class="n">2</span>; <span onmouseout="hideTip(event, 'fs43', 124)" onmouseover="showTip(event, 'fs43', 124)" class="i">p2</span>,<span class="n">2</span>; _] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 125)" onmouseover="showTip(event, 'fs8', 125)" class="i">Some</span>(<span onmouseout="hideTip(event, 'fs44', 126)" onmouseover="showTip(event, 'fs44', 126)" class="i">max</span> <span onmouseout="hideTip(event, 'fs42', 127)" onmouseover="showTip(event, 'fs42', 127)" class="i">p1</span> <span onmouseout="hideTip(event, 'fs43', 128)" onmouseover="showTip(event, 'fs43', 128)" class="i">p2</span>, <span onmouseout="hideTip(event, 'fs45', 129)" onmouseover="showTip(event, 'fs45', 129)" class="i">min</span> <span onmouseout="hideTip(event, 'fs42', 130)" onmouseover="showTip(event, 'fs42', 130)" class="i">p1</span> <span onmouseout="hideTip(event, 'fs43', 131)" onmouseover="showTip(event, 'fs43', 131)" class="i">p2</span>)
+    | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 132)" onmouseover="showTip(event, 'fs9', 132)" class="i">None</span></pre>
+</td>
+</tr>
+</table>
+
+<h3>Paire</h3>
+
+<p>La paire contient deux cartes identiques et trois cartes seules.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">Pair</span>|_|) <span class="o">=</span>
+    <span class="k">function</span>
+    | <span onmouseout="hideTip(event, 'fs38', 133)" onmouseover="showTip(event, 'fs38', 133)" class="i">GroupCards</span> [<span onmouseout="hideTip(event, 'fs41', 134)" onmouseover="showTip(event, 'fs41', 134)" class="i">p</span>,<span class="n">2</span>; _,<span class="n">1</span>; _; _]  <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 135)" onmouseover="showTip(event, 'fs8', 135)" class="i">Some</span>(<span onmouseout="hideTip(event, 'fs41', 136)" onmouseover="showTip(event, 'fs41', 136)" class="i">p</span>)
+    | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 137)" onmouseover="showTip(event, 'fs9', 137)" class="i">None</span></pre>
+</td>
+</tr>
+</table>
+
+<h3>La plus haute carte</h3>
+
+<p>Sinon on prend simplement la carte la plus haute.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">High</span>|_|) <span class="o">=</span>
+    <span class="k">function</span>
+    | <span onmouseout="hideTip(event, 'fs38', 138)" onmouseover="showTip(event, 'fs38', 138)" class="i">GroupCards</span> ((_,<span class="n">1</span>) <span class="o">::</span> _) <span class="k">as</span> <span onmouseout="hideTip(event, 'fs20', 139)" onmouseover="showTip(event, 'fs20', 139)" class="i">hand</span> <span class="k">-&gt;</span>  <span onmouseout="hideTip(event, 'fs8', 140)" onmouseover="showTip(event, 'fs8', 140)" class="i">Some</span>(<span onmouseout="hideTip(event, 'fs18', 141)" onmouseover="showTip(event, 'fs18', 141)" class="i">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 142)" onmouseover="showTip(event, 'fs46', 142)" class="i">maxBy</span> <span onmouseout="hideTip(event, 'fs15', 143)" onmouseover="showTip(event, 'fs15', 143)" class="i">value</span> <span onmouseout="hideTip(event, 'fs20', 144)" onmouseover="showTip(event, 'fs20', 144)" class="i">hand</span>)
+    | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 145)" onmouseover="showTip(event, 'fs9', 145)" class="i">None</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>Nommage d'une combinaison</h2>
+
+<p>Les fonction svalue et scolor sont utilisée pour le pretty print, 
+avec les noms de cartes et les caractères unicodes pour les couleurs.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs47', 146)" onmouseover="showTip(event, 'fs47', 146)" class="i">svalue</span> _ <span class="o">=</span> 
+        <span class="k">function</span>
+        | <span onmouseout="hideTip(event, 'fs28', 147)" onmouseover="showTip(event, 'fs28', 147)" class="i">Ace</span> <span class="k">-&gt;</span> <span class="s">&quot;</span><span class="s">A</span><span class="s">&quot;</span>
+        | <span onmouseout="hideTip(event, 'fs48', 148)" onmouseover="showTip(event, 'fs48', 148)" class="i">King</span> <span class="k">-&gt;</span> <span class="s">&quot;</span><span class="s">K</span><span class="s">&quot;</span>
+        | <span onmouseout="hideTip(event, 'fs49', 149)" onmouseover="showTip(event, 'fs49', 149)" class="i">Queen</span> <span class="k">-&gt;</span> <span class="s">&quot;</span><span class="s">Q</span><span class="s">&quot;</span>
+        | <span onmouseout="hideTip(event, 'fs50', 150)" onmouseover="showTip(event, 'fs50', 150)" class="i">Jack</span> <span class="k">-&gt;</span> <span class="s">&quot;</span><span class="s">J</span><span class="s">&quot;</span>
+        | <span onmouseout="hideTip(event, 'fs51', 151)" onmouseover="showTip(event, 'fs51', 151)" class="i">n</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 152)" onmouseover="showTip(event, 'fs52', 152)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs51', 153)" onmouseover="showTip(event, 'fs51', 153)" class="i">n</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs53', 154)" onmouseover="showTip(event, 'fs53', 154)" class="i">scolor</span> _ <span class="o">=</span> 
+          <span class="k">function</span>
+          | <span onmouseout="hideTip(event, 'fs1', 155)" onmouseover="showTip(event, 'fs1', 155)" class="i">Spade</span> <span class="k">-&gt;</span> <span class="s">&quot;</span><span class="s">\u2660</span><span class="s">&quot;</span>
+          | <span onmouseout="hideTip(event, 'fs2', 156)" onmouseover="showTip(event, 'fs2', 156)" class="i">Heart</span> <span class="k">-&gt;</span> <span class="s">&quot;</span><span class="s">\u2665</span><span class="s">&quot;</span>
+          | <span onmouseout="hideTip(event, 'fs3', 157)" onmouseover="showTip(event, 'fs3', 157)" class="i">Club</span> <span class="k">-&gt;</span> <span class="s">&quot;</span><span class="s">\u2663</span><span class="s">&quot;</span>
+          | <span onmouseout="hideTip(event, 'fs4', 158)" onmouseover="showTip(event, 'fs4', 158)" class="i">Diamond</span> <span class="k">-&gt;</span> <span class="s">&quot;</span><span class="s">\u2666</span><span class="s">&quot;</span> </pre>
+</td>
+</tr>
+</table>
+
+<p>la fonction <code>showHand</code> prend une main, la trie,
+et match avec les active patterns de chaque combinaison pour afficher
+le résultat.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs54', 159)" onmouseover="showTip(event, 'fs54', 159)" class="i">showHand</span> <span onmouseout="hideTip(event, 'fs20', 160)" onmouseover="showTip(event, 'fs20', 160)" class="i">hand</span> <span class="o">=</span>
+    <span class="k">match</span> <span onmouseout="hideTip(event, 'fs17', 161)" onmouseover="showTip(event, 'fs17', 161)" class="i">sort</span> <span onmouseout="hideTip(event, 'fs20', 162)" onmouseover="showTip(event, 'fs20', 162)" class="i">hand</span> <span class="k">with</span>
+    | <span onmouseout="hideTip(event, 'fs55', 163)" onmouseover="showTip(event, 'fs55', 163)" class="i">QuinteFlush</span>(<span onmouseout="hideTip(event, 'fs14', 164)" onmouseover="showTip(event, 'fs14', 164)" class="i">c</span>,<span onmouseout="hideTip(event, 'fs16', 165)" onmouseover="showTip(event, 'fs16', 165)" class="i">v</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 166)" onmouseover="showTip(event, 'fs52', 166)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">Quint</span><span class="s"> </span><span class="s">Flush</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 167)" onmouseover="showTip(event, 'fs47', 167)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs16', 168)" onmouseover="showTip(event, 'fs16', 168)" class="i">v</span> <span onmouseout="hideTip(event, 'fs53', 169)" onmouseover="showTip(event, 'fs53', 169)" class="i">scolor</span> <span onmouseout="hideTip(event, 'fs14', 170)" onmouseover="showTip(event, 'fs14', 170)" class="i">c</span>
+    | <span onmouseout="hideTip(event, 'fs56', 171)" onmouseover="showTip(event, 'fs56', 171)" class="i">Square</span>(<span onmouseout="hideTip(event, 'fs16', 172)" onmouseover="showTip(event, 'fs16', 172)" class="i">v</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 173)" onmouseover="showTip(event, 'fs52', 173)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">Square</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 174)" onmouseover="showTip(event, 'fs47', 174)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs16', 175)" onmouseover="showTip(event, 'fs16', 175)" class="i">v</span>
+    | <span onmouseout="hideTip(event, 'fs57', 176)" onmouseover="showTip(event, 'fs57', 176)" class="i">Full</span>(<span onmouseout="hideTip(event, 'fs40', 177)" onmouseover="showTip(event, 'fs40', 177)" class="i">b</span>,<span onmouseout="hideTip(event, 'fs41', 178)" onmouseover="showTip(event, 'fs41', 178)" class="i">p</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 179)" onmouseover="showTip(event, 'fs52', 179)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">Full</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s"> </span><span class="s">by</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 180)" onmouseover="showTip(event, 'fs47', 180)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs40', 181)" onmouseover="showTip(event, 'fs40', 181)" class="i">b</span> <span onmouseout="hideTip(event, 'fs47', 182)" onmouseover="showTip(event, 'fs47', 182)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs41', 183)" onmouseover="showTip(event, 'fs41', 183)" class="i">p</span> 
+    | <span onmouseout="hideTip(event, 'fs30', 184)" onmouseover="showTip(event, 'fs30', 184)" class="i">HandColor</span>(<span onmouseout="hideTip(event, 'fs14', 185)" onmouseover="showTip(event, 'fs14', 185)" class="i">c</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 186)" onmouseover="showTip(event, 'fs52', 186)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">Color</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs53', 187)" onmouseover="showTip(event, 'fs53', 187)" class="i">scolor</span> <span onmouseout="hideTip(event, 'fs14', 188)" onmouseover="showTip(event, 'fs14', 188)" class="i">c</span> 
+    | <span onmouseout="hideTip(event, 'fs29', 189)" onmouseover="showTip(event, 'fs29', 189)" class="i">Sequence</span>(<span onmouseout="hideTip(event, 'fs16', 190)" onmouseover="showTip(event, 'fs16', 190)" class="i">v</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 191)" onmouseover="showTip(event, 'fs52', 191)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">Sequence</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 192)" onmouseover="showTip(event, 'fs47', 192)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs16', 193)" onmouseover="showTip(event, 'fs16', 193)" class="i">v</span>
+    | <span onmouseout="hideTip(event, 'fs58', 194)" onmouseover="showTip(event, 'fs58', 194)" class="i">Brelan</span>(<span onmouseout="hideTip(event, 'fs40', 195)" onmouseover="showTip(event, 'fs40', 195)" class="i">b</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 196)" onmouseover="showTip(event, 'fs52', 196)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">Brelan</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 197)" onmouseover="showTip(event, 'fs47', 197)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs40', 198)" onmouseover="showTip(event, 'fs40', 198)" class="i">b</span>
+    | <span onmouseout="hideTip(event, 'fs59', 199)" onmouseover="showTip(event, 'fs59', 199)" class="i">DoublePair</span>(<span onmouseout="hideTip(event, 'fs42', 200)" onmouseover="showTip(event, 'fs42', 200)" class="i">p1</span>, <span onmouseout="hideTip(event, 'fs43', 201)" onmouseover="showTip(event, 'fs43', 201)" class="i">p2</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 202)" onmouseover="showTip(event, 'fs52', 202)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">Double</span><span class="s"> </span><span class="s">pair</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s"> </span><span class="s">and</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 203)" onmouseover="showTip(event, 'fs47', 203)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs42', 204)" onmouseover="showTip(event, 'fs42', 204)" class="i">p1</span> <span onmouseout="hideTip(event, 'fs47', 205)" onmouseover="showTip(event, 'fs47', 205)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs43', 206)" onmouseover="showTip(event, 'fs43', 206)" class="i">p2</span>
+    | <span onmouseout="hideTip(event, 'fs60', 207)" onmouseover="showTip(event, 'fs60', 207)" class="i">Pair</span>(<span onmouseout="hideTip(event, 'fs41', 208)" onmouseover="showTip(event, 'fs41', 208)" class="i">p</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 209)" onmouseover="showTip(event, 'fs52', 209)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">Pair</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 210)" onmouseover="showTip(event, 'fs47', 210)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs41', 211)" onmouseover="showTip(event, 'fs41', 211)" class="i">p</span>
+    | <span onmouseout="hideTip(event, 'fs61', 212)" onmouseover="showTip(event, 'fs61', 212)" class="i">High</span>(<span onmouseout="hideTip(event, 'fs10', 213)" onmouseover="showTip(event, 'fs10', 213)" class="i">Card</span>(<span onmouseout="hideTip(event, 'fs14', 214)" onmouseover="showTip(event, 'fs14', 214)" class="i">c</span>,<span onmouseout="hideTip(event, 'fs16', 215)" onmouseover="showTip(event, 'fs16', 215)" class="i">v</span>)) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 216)" onmouseover="showTip(event, 'fs52', 216)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">Highest</span><span class="s"> </span><span class="s">%</span><span class="s">a</span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 217)" onmouseover="showTip(event, 'fs47', 217)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs16', 218)" onmouseover="showTip(event, 'fs16', 218)" class="i">v</span> <span onmouseout="hideTip(event, 'fs53', 219)" onmouseover="showTip(event, 'fs53', 219)" class="i">scolor</span> <span onmouseout="hideTip(event, 'fs14', 220)" onmouseover="showTip(event, 'fs14', 220)" class="i">c</span>
+    | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs20', 221)" onmouseover="showTip(event, 'fs20', 221)" class="i">hand</span> 
+           <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs32', 222)" onmouseover="showTip(event, 'fs32', 222)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 223)" onmouseover="showTip(event, 'fs62', 223)" class="i">map</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs10', 224)" onmouseover="showTip(event, 'fs10', 224)" class="i">Card</span>(<span onmouseout="hideTip(event, 'fs14', 225)" onmouseover="showTip(event, 'fs14', 225)" class="i">c</span>,<span onmouseout="hideTip(event, 'fs16', 226)" onmouseover="showTip(event, 'fs16', 226)" class="i">v</span>)) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs52', 227)" onmouseover="showTip(event, 'fs52', 227)" class="i">sprintf</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">a</span><span class="s">%</span><span class="s">a</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 228)" onmouseover="showTip(event, 'fs47', 228)" class="i">svalue</span> <span onmouseout="hideTip(event, 'fs16', 229)" onmouseover="showTip(event, 'fs16', 229)" class="i">v</span> <span onmouseout="hideTip(event, 'fs53', 230)" onmouseover="showTip(event, 'fs53', 230)" class="i">scolor</span> <span onmouseout="hideTip(event, 'fs14', 231)" onmouseover="showTip(event, 'fs14', 231)" class="i">c</span>)
+           <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs63', 232)" onmouseover="showTip(event, 'fs63', 232)" class="i">String</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 233)" onmouseover="showTip(event, 'fs64', 233)" class="i">concat</span> <span class="s">&quot;</span><span class="s"> </span><span class="s">&quot;</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs65', 234)" onmouseover="showTip(event, 'fs65', 234)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>Testes</h2>
+
+<p>Les examples utilisent les fonctions <code>h</code>,<code>s</code>,<code>c</code> et <code>d</code> pour
+<code>Hear</code>, <code>Spade</code>, <code>Club</code> et <code>Diamond</code>. Elles prennent une valeur et 
+constuisent une carte de la couleur donnée.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs66', 235)" onmouseover="showTip(event, 'fs66', 235)" class="i">h</span> <span onmouseout="hideTip(event, 'fs51', 236)" onmouseover="showTip(event, 'fs51', 236)" class="i">n</span><span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 237)" onmouseover="showTip(event, 'fs10', 237)" class="i">Card</span>(<span onmouseout="hideTip(event, 'fs2', 238)" onmouseover="showTip(event, 'fs2', 238)" class="i">Heart</span>, <span onmouseout="hideTip(event, 'fs51', 239)" onmouseover="showTip(event, 'fs51', 239)" class="i">n</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs67', 240)" onmouseover="showTip(event, 'fs67', 240)" class="i">s</span> <span onmouseout="hideTip(event, 'fs51', 241)" onmouseover="showTip(event, 'fs51', 241)" class="i">n</span><span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 242)" onmouseover="showTip(event, 'fs10', 242)" class="i">Card</span>(<span onmouseout="hideTip(event, 'fs1', 243)" onmouseover="showTip(event, 'fs1', 243)" class="i">Spade</span>, <span onmouseout="hideTip(event, 'fs51', 244)" onmouseover="showTip(event, 'fs51', 244)" class="i">n</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs68', 245)" onmouseover="showTip(event, 'fs68', 245)" class="i">c</span> <span onmouseout="hideTip(event, 'fs51', 246)" onmouseover="showTip(event, 'fs51', 246)" class="i">n</span><span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 247)" onmouseover="showTip(event, 'fs10', 247)" class="i">Card</span>(<span onmouseout="hideTip(event, 'fs3', 248)" onmouseover="showTip(event, 'fs3', 248)" class="i">Club</span>, <span onmouseout="hideTip(event, 'fs51', 249)" onmouseover="showTip(event, 'fs51', 249)" class="i">n</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs69', 250)" onmouseover="showTip(event, 'fs69', 250)" class="i">d</span> <span onmouseout="hideTip(event, 'fs51', 251)" onmouseover="showTip(event, 'fs51', 251)" class="i">n</span><span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 252)" onmouseover="showTip(event, 'fs10', 252)" class="i">Card</span>(<span onmouseout="hideTip(event, 'fs4', 253)" onmouseover="showTip(event, 'fs4', 253)" class="i">Diamond</span>, <span onmouseout="hideTip(event, 'fs51', 254)" onmouseover="showTip(event, 'fs51', 254)" class="i">n</span>)</pre>
+</td>
+</tr>
+</table>
+
+<p>Les valeurs <code>a</code>, <code>k</code>, <code>q</code>, <code>j</code> représentent les valeurs
+    de l'as (14), roi (13), reine (12) et valet (11).</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs70', 255)" onmouseover="showTip(event, 'fs70', 255)" class="i">a</span> <span class="o">=</span> <span class="n">14</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs71', 256)" onmouseover="showTip(event, 'fs71', 256)" class="i">k</span> <span class="o">=</span> <span class="n">13</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs72', 257)" onmouseover="showTip(event, 'fs72', 257)" class="i">q</span> <span class="o">=</span> <span class="n">12</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs73', 258)" onmouseover="showTip(event, 'fs73', 258)" class="i">j</span> <span class="o">=</span> <span class="n">11</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste la Quinte flush.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs66', 259)" onmouseover="showTip(event, 'fs66', 259)" class="i">h</span> <span class="n">7</span>;<span onmouseout="hideTip(event, 'fs66', 260)" onmouseover="showTip(event, 'fs66', 260)" class="i">h</span> <span class="n">8</span>; <span onmouseout="hideTip(event, 'fs66', 261)" onmouseover="showTip(event, 'fs66', 261)" class="i">h</span> <span class="n">9</span>;<span onmouseout="hideTip(event, 'fs66', 262)" onmouseover="showTip(event, 'fs66', 262)" class="i">h</span> <span class="n">10</span>; <span onmouseout="hideTip(event, 'fs66', 263)" onmouseover="showTip(event, 'fs66', 263)" class="i">h</span> <span onmouseout="hideTip(event, 'fs73', 264)" onmouseover="showTip(event, 'fs73', 264)" class="i">j</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 265)" onmouseover="showTip(event, 'fs54', 265)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste la quinte flush A 2 3 4 5. c'est le cas particulier
+    de Sequence.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs66', 266)" onmouseover="showTip(event, 'fs66', 266)" class="i">h</span> <span onmouseout="hideTip(event, 'fs70', 267)" onmouseover="showTip(event, 'fs70', 267)" class="i">a</span>;<span onmouseout="hideTip(event, 'fs66', 268)" onmouseover="showTip(event, 'fs66', 268)" class="i">h</span> <span class="n">2</span>; <span onmouseout="hideTip(event, 'fs66', 269)" onmouseover="showTip(event, 'fs66', 269)" class="i">h</span> <span class="n">3</span>;<span onmouseout="hideTip(event, 'fs66', 270)" onmouseover="showTip(event, 'fs66', 270)" class="i">h</span> <span class="n">4</span>; <span onmouseout="hideTip(event, 'fs66', 271)" onmouseover="showTip(event, 'fs66', 271)" class="i">h</span> <span class="n">5</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 272)" onmouseover="showTip(event, 'fs54', 272)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste la quinte flush 10 J Q K A. C'est l'autre extreme.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs66', 273)" onmouseover="showTip(event, 'fs66', 273)" class="i">h</span> <span class="n">10</span>;<span onmouseout="hideTip(event, 'fs66', 274)" onmouseover="showTip(event, 'fs66', 274)" class="i">h</span> <span onmouseout="hideTip(event, 'fs73', 275)" onmouseover="showTip(event, 'fs73', 275)" class="i">j</span>; <span onmouseout="hideTip(event, 'fs66', 276)" onmouseover="showTip(event, 'fs66', 276)" class="i">h</span> <span onmouseout="hideTip(event, 'fs72', 277)" onmouseover="showTip(event, 'fs72', 277)" class="i">q</span>;<span onmouseout="hideTip(event, 'fs66', 278)" onmouseover="showTip(event, 'fs66', 278)" class="i">h</span> <span onmouseout="hideTip(event, 'fs71', 279)" onmouseover="showTip(event, 'fs71', 279)" class="i">k</span>; <span onmouseout="hideTip(event, 'fs66', 280)" onmouseover="showTip(event, 'fs66', 280)" class="i">h</span> <span onmouseout="hideTip(event, 'fs70', 281)" onmouseover="showTip(event, 'fs70', 281)" class="i">a</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 282)" onmouseover="showTip(event, 'fs54', 282)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste une main sans combinaison.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs67', 283)" onmouseover="showTip(event, 'fs67', 283)" class="i">s</span> <span class="n">5</span>; <span onmouseout="hideTip(event, 'fs66', 284)" onmouseover="showTip(event, 'fs66', 284)" class="i">h</span> <span class="n">3</span>; <span onmouseout="hideTip(event, 'fs68', 285)" onmouseover="showTip(event, 'fs68', 285)" class="i">c</span> <span onmouseout="hideTip(event, 'fs72', 286)" onmouseover="showTip(event, 'fs72', 286)" class="i">q</span>; <span onmouseout="hideTip(event, 'fs69', 287)" onmouseover="showTip(event, 'fs69', 287)" class="i">d</span> <span class="n">4</span>; <span onmouseout="hideTip(event, 'fs66', 288)" onmouseover="showTip(event, 'fs66', 288)" class="i">h</span> <span class="n">8</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 289)" onmouseover="showTip(event, 'fs54', 289)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste une double paire.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs67', 290)" onmouseover="showTip(event, 'fs67', 290)" class="i">s</span> <span class="n">5</span>; <span onmouseout="hideTip(event, 'fs66', 291)" onmouseover="showTip(event, 'fs66', 291)" class="i">h</span> <span class="n">3</span>; <span onmouseout="hideTip(event, 'fs68', 292)" onmouseover="showTip(event, 'fs68', 292)" class="i">c</span> <span class="n">5</span>; <span onmouseout="hideTip(event, 'fs69', 293)" onmouseover="showTip(event, 'fs69', 293)" class="i">d</span> <span class="n">4</span>; <span onmouseout="hideTip(event, 'fs68', 294)" onmouseover="showTip(event, 'fs68', 294)" class="i">c</span> <span class="n">3</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 295)" onmouseover="showTip(event, 'fs54', 295)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste As carte haute.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs67', 296)" onmouseover="showTip(event, 'fs67', 296)" class="i">s</span> <span class="n">9</span>; <span onmouseout="hideTip(event, 'fs66', 297)" onmouseover="showTip(event, 'fs66', 297)" class="i">h</span> <span class="n">10</span>; <span onmouseout="hideTip(event, 'fs68', 298)" onmouseover="showTip(event, 'fs68', 298)" class="i">c</span> <span onmouseout="hideTip(event, 'fs73', 299)" onmouseover="showTip(event, 'fs73', 299)" class="i">j</span>; <span onmouseout="hideTip(event, 'fs69', 300)" onmouseover="showTip(event, 'fs69', 300)" class="i">d</span> <span onmouseout="hideTip(event, 'fs72', 301)" onmouseover="showTip(event, 'fs72', 301)" class="i">q</span>; <span onmouseout="hideTip(event, 'fs66', 302)" onmouseover="showTip(event, 'fs66', 302)" class="i">h</span> <span onmouseout="hideTip(event, 'fs70', 303)" onmouseover="showTip(event, 'fs70', 303)" class="i">a</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 304)" onmouseover="showTip(event, 'fs54', 304)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste un Carré.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs67', 305)" onmouseover="showTip(event, 'fs67', 305)" class="i">s</span> <span class="n">6</span>; <span onmouseout="hideTip(event, 'fs66', 306)" onmouseover="showTip(event, 'fs66', 306)" class="i">h</span> <span class="n">6</span>; <span onmouseout="hideTip(event, 'fs66', 307)" onmouseover="showTip(event, 'fs66', 307)" class="i">h</span> <span onmouseout="hideTip(event, 'fs73', 308)" onmouseover="showTip(event, 'fs73', 308)" class="i">j</span>; <span onmouseout="hideTip(event, 'fs69', 309)" onmouseover="showTip(event, 'fs69', 309)" class="i">d</span> <span class="n">6</span>; <span onmouseout="hideTip(event, 'fs68', 310)" onmouseover="showTip(event, 'fs68', 310)" class="i">c</span> <span class="n">6</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 311)" onmouseover="showTip(event, 'fs54', 311)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste un Brelan.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs67', 312)" onmouseover="showTip(event, 'fs67', 312)" class="i">s</span> <span onmouseout="hideTip(event, 'fs73', 313)" onmouseover="showTip(event, 'fs73', 313)" class="i">j</span>; <span onmouseout="hideTip(event, 'fs69', 314)" onmouseover="showTip(event, 'fs69', 314)" class="i">d</span> <span class="n">3</span>; <span onmouseout="hideTip(event, 'fs66', 315)" onmouseover="showTip(event, 'fs66', 315)" class="i">h</span> <span onmouseout="hideTip(event, 'fs73', 316)" onmouseover="showTip(event, 'fs73', 316)" class="i">j</span>; <span onmouseout="hideTip(event, 'fs68', 317)" onmouseover="showTip(event, 'fs68', 317)" class="i">c</span> <span onmouseout="hideTip(event, 'fs72', 318)" onmouseover="showTip(event, 'fs72', 318)" class="i">q</span>; <span onmouseout="hideTip(event, 'fs69', 319)" onmouseover="showTip(event, 'fs69', 319)" class="i">d</span> <span onmouseout="hideTip(event, 'fs73', 320)" onmouseover="showTip(event, 'fs73', 320)" class="i">j</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 321)" onmouseover="showTip(event, 'fs54', 321)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste un Full.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs67', 322)" onmouseover="showTip(event, 'fs67', 322)" class="i">s</span> <span onmouseout="hideTip(event, 'fs73', 323)" onmouseover="showTip(event, 'fs73', 323)" class="i">j</span>; <span onmouseout="hideTip(event, 'fs69', 324)" onmouseover="showTip(event, 'fs69', 324)" class="i">d</span> <span class="n">3</span>; <span onmouseout="hideTip(event, 'fs66', 325)" onmouseover="showTip(event, 'fs66', 325)" class="i">h</span> <span onmouseout="hideTip(event, 'fs73', 326)" onmouseover="showTip(event, 'fs73', 326)" class="i">j</span>; <span onmouseout="hideTip(event, 'fs68', 327)" onmouseover="showTip(event, 'fs68', 327)" class="i">c</span> <span class="n">3</span>; <span onmouseout="hideTip(event, 'fs69', 328)" onmouseover="showTip(event, 'fs69', 328)" class="i">d</span> <span onmouseout="hideTip(event, 'fs73', 329)" onmouseover="showTip(event, 'fs73', 329)" class="i">j</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 330)" onmouseover="showTip(event, 'fs54', 330)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste une paire.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs67', 331)" onmouseover="showTip(event, 'fs67', 331)" class="i">s</span> <span class="n">5</span>; <span onmouseout="hideTip(event, 'fs66', 332)" onmouseover="showTip(event, 'fs66', 332)" class="i">h</span> <span class="n">3</span>; <span onmouseout="hideTip(event, 'fs68', 333)" onmouseover="showTip(event, 'fs68', 333)" class="i">c</span> <span class="n">5</span>; <span onmouseout="hideTip(event, 'fs69', 334)" onmouseover="showTip(event, 'fs69', 334)" class="i">d</span> <span class="n">4</span>; <span onmouseout="hideTip(event, 'fs68', 335)" onmouseover="showTip(event, 'fs68', 335)" class="i">c</span> <span onmouseout="hideTip(event, 'fs70', 336)" onmouseover="showTip(event, 'fs70', 336)" class="i">a</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 337)" onmouseover="showTip(event, 'fs54', 337)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste une couleur.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs67', 338)" onmouseover="showTip(event, 'fs67', 338)" class="i">s</span> <span class="n">5</span>; <span onmouseout="hideTip(event, 'fs67', 339)" onmouseover="showTip(event, 'fs67', 339)" class="i">s</span> <span class="n">3</span>; <span onmouseout="hideTip(event, 'fs67', 340)" onmouseover="showTip(event, 'fs67', 340)" class="i">s</span> <span class="n">5</span>; <span onmouseout="hideTip(event, 'fs67', 341)" onmouseover="showTip(event, 'fs67', 341)" class="i">s</span> <span class="n">4</span>; <span onmouseout="hideTip(event, 'fs67', 342)" onmouseover="showTip(event, 'fs67', 342)" class="i">s</span> <span onmouseout="hideTip(event, 'fs70', 343)" onmouseover="showTip(event, 'fs70', 343)" class="i">a</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 344)" onmouseover="showTip(event, 'fs54', 344)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Teste une suite.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span onmouseout="hideTip(event, 'fs66', 345)" onmouseover="showTip(event, 'fs66', 345)" class="i">h</span> <span class="n">7</span>;<span onmouseout="hideTip(event, 'fs67', 346)" onmouseover="showTip(event, 'fs67', 346)" class="i">s</span> <span class="n">8</span>; <span onmouseout="hideTip(event, 'fs69', 347)" onmouseover="showTip(event, 'fs69', 347)" class="i">d</span> <span class="n">9</span>;<span onmouseout="hideTip(event, 'fs68', 348)" onmouseover="showTip(event, 'fs68', 348)" class="i">c</span> <span class="n">10</span>; <span onmouseout="hideTip(event, 'fs66', 349)" onmouseover="showTip(event, 'fs66', 349)" class="i">h</span> <span onmouseout="hideTip(event, 'fs73', 350)" onmouseover="showTip(event, 'fs73', 350)" class="i">j</span>] <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs54', 351)" onmouseover="showTip(event, 'fs54', 351)" class="i">showHand</span></pre>
+</td>
+</tr>
+</table>
+
+          <div class="tip" id="fs1">union case Color.Spade: Color</div>
+<div class="tip" id="fs2">union case Color.Heart: Color</div>
+<div class="tip" id="fs3">union case Color.Club: Color</div>
+<div class="tip" id="fs4">union case Color.Diamond: Color</div>
+<div class="tip" id="fs5">val isValue : n:&#39;a -&gt; v:&#39;a -&gt; unit option (requires equality)<br /><br />Full name: Poker.isValue</div>
+<div class="tip" id="fs6">val n : &#39;a (requires equality)</div>
+<div class="tip" id="fs7">val v : &#39;a (requires equality)</div>
+<div class="tip" id="fs8">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs9">union case Option.None: Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs10">Multiple items<br />union case Card.Card: Color * int -&gt; Card<br /><br />--------------------<br />type Card = | Card of Color * int<br /><br />Full name: Poker.Card</div>
+<div class="tip" id="fs11">type Color =<br />&#160;&#160;| Spade<br />&#160;&#160;| Heart<br />&#160;&#160;| Club<br />&#160;&#160;| Diamond<br /><br />Full name: Poker.Color</div>
+<div class="tip" id="fs12">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs13">val color : Card -&gt; Color<br /><br />Full name: Poker.color</div>
+<div class="tip" id="fs14">val c : Color</div>
+<div class="tip" id="fs15">val value : Card -&gt; int<br /><br />Full name: Poker.value</div>
+<div class="tip" id="fs16">val v : int</div>
+<div class="tip" id="fs17">val sort : (Card list -&gt; Card list)<br /><br />Full name: Poker.sort</div>
+<div class="tip" id="fs18">Multiple items<br />module List<br /><br />from Microsoft.FSharp.Collections<br /><br />--------------------<br />type List&lt;&#39;T&gt; =<br />&#160;&#160;| ( [] )<br />&#160;&#160;| ( :: ) of Head: &#39;T * Tail: &#39;T list<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;interface IEnumerable&lt;&#39;T&gt;<br />&#160;&#160;member Head : &#39;T<br />&#160;&#160;member IsEmpty : bool<br />&#160;&#160;member Item : index:int -&gt; &#39;T with get<br />&#160;&#160;member Length : int<br />&#160;&#160;member Tail : &#39;T list<br />&#160;&#160;static member Cons : head:&#39;T * tail:&#39;T list -&gt; &#39;T list<br />&#160;&#160;static member Empty : &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.List&lt;_&gt;</div>
+<div class="tip" id="fs19">val sortBy : projection:(&#39;T -&gt; &#39;Key) -&gt; list:&#39;T list -&gt; &#39;T list (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.List.sortBy</div>
+<div class="tip" id="fs20">val hand : Card list</div>
+<div class="tip" id="fs21">val loop : (Color -&gt; Card list -&gt; Color option)</div>
+<div class="tip" id="fs22">val firstColor : Color</div>
+<div class="tip" id="fs23">Multiple items<br />active recognizer Color: Card -&gt; Color<br /><br />Full name: Poker.( |Color| )<br /><br />--------------------<br />type Color =<br />&#160;&#160;| Spade<br />&#160;&#160;| Heart<br />&#160;&#160;| Club<br />&#160;&#160;| Diamond<br /><br />Full name: Poker.Color</div>
+<div class="tip" id="fs24">val tail : Card list</div>
+<div class="tip" id="fs25">val loop : (int -&gt; Card list -&gt; int option)</div>
+<div class="tip" id="fs26">val previous : int</div>
+<div class="tip" id="fs27">active recognizer Value: Card -&gt; int<br /><br />Full name: Poker.( |Value| )</div>
+<div class="tip" id="fs28">active recognizer Ace: int -&gt; unit option<br /><br />Full name: Poker.( |Ace|_| )</div>
+<div class="tip" id="fs29">active recognizer Sequence: Card list -&gt; int option<br /><br />Full name: Poker.( |Sequence|_| )</div>
+<div class="tip" id="fs30">active recognizer HandColor: Card list -&gt; Color option<br /><br />Full name: Poker.( |HandColor|_| )</div>
+<div class="tip" id="fs31">val hand : seq&lt;Card&gt;</div>
+<div class="tip" id="fs32">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs33">val countBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;Key * int&gt; (requires equality)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.countBy</div>
+<div class="tip" id="fs34">val sortBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.sortBy</div>
+<div class="tip" id="fs35">val snd : tuple:(&#39;T1 * &#39;T2) -&gt; &#39;T2<br /><br />Full name: Microsoft.FSharp.Core.Operators.snd</div>
+<div class="tip" id="fs36">val toList : source:seq&lt;&#39;T&gt; -&gt; &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.Seq.toList</div>
+<div class="tip" id="fs37">val rev : list:&#39;T list -&gt; &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.List.rev</div>
+<div class="tip" id="fs38">active recognizer GroupCards: seq&lt;Card&gt; -&gt; (int * int) list<br /><br />Full name: Poker.( |GroupCards| )</div>
+<div class="tip" id="fs39">val s : int</div>
+<div class="tip" id="fs40">val b : int</div>
+<div class="tip" id="fs41">val p : int</div>
+<div class="tip" id="fs42">val p1 : int</div>
+<div class="tip" id="fs43">val p2 : int</div>
+<div class="tip" id="fs44">val max : e1:&#39;T -&gt; e2:&#39;T -&gt; &#39;T (requires comparison)<br /><br />Full name: Microsoft.FSharp.Core.Operators.max</div>
+<div class="tip" id="fs45">val min : e1:&#39;T -&gt; e2:&#39;T -&gt; &#39;T (requires comparison)<br /><br />Full name: Microsoft.FSharp.Core.Operators.min</div>
+<div class="tip" id="fs46">val maxBy : projection:(&#39;T -&gt; &#39;U) -&gt; list:&#39;T list -&gt; &#39;T (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.List.maxBy</div>
+<div class="tip" id="fs47">val svalue : &#39;a -&gt; (int -&gt; string)<br /><br />Full name: Poker.svalue</div>
+<div class="tip" id="fs48">active recognizer King: int -&gt; unit option<br /><br />Full name: Poker.( |King|_| )</div>
+<div class="tip" id="fs49">active recognizer Queen: int -&gt; unit option<br /><br />Full name: Poker.( |Queen|_| )</div>
+<div class="tip" id="fs50">active recognizer Jack: int -&gt; unit option<br /><br />Full name: Poker.( |Jack|_| )</div>
+<div class="tip" id="fs51">val n : int</div>
+<div class="tip" id="fs52">val sprintf : format:Printf.StringFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.sprintf</div>
+<div class="tip" id="fs53">val scolor : &#39;a -&gt; (Color -&gt; string)<br /><br />Full name: Poker.scolor</div>
+<div class="tip" id="fs54">val showHand : hand:Card list -&gt; unit<br /><br />Full name: Poker.showHand</div>
+<div class="tip" id="fs55">active recognizer QuinteFlush: Card list -&gt; (Color * int) option<br /><br />Full name: Poker.( |QuinteFlush|_| )</div>
+<div class="tip" id="fs56">active recognizer Square: seq&lt;Card&gt; -&gt; int option<br /><br />Full name: Poker.( |Square|_| )</div>
+<div class="tip" id="fs57">active recognizer Full: seq&lt;Card&gt; -&gt; (int * int) option<br /><br />Full name: Poker.( |Full|_| )</div>
+<div class="tip" id="fs58">active recognizer Brelan: seq&lt;Card&gt; -&gt; int option<br /><br />Full name: Poker.( |Brelan|_| )</div>
+<div class="tip" id="fs59">active recognizer DoublePair: seq&lt;Card&gt; -&gt; (int * int) option<br /><br />Full name: Poker.( |DoublePair|_| )</div>
+<div class="tip" id="fs60">active recognizer Pair: seq&lt;Card&gt; -&gt; int option<br /><br />Full name: Poker.( |Pair|_| )</div>
+<div class="tip" id="fs61">active recognizer High: Card list -&gt; Card option<br /><br />Full name: Poker.( |High|_| )</div>
+<div class="tip" id="fs62">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;U&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.map</div>
+<div class="tip" id="fs63">module String<br /><br />from Microsoft.FSharp.Core</div>
+<div class="tip" id="fs64">val concat : sep:string -&gt; strings:seq&lt;string&gt; -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.String.concat</div>
+<div class="tip" id="fs65">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
+<div class="tip" id="fs66">val h : n:int -&gt; Card<br /><br />Full name: Poker.h</div>
+<div class="tip" id="fs67">val s : n:int -&gt; Card<br /><br />Full name: Poker.s</div>
+<div class="tip" id="fs68">val c : n:int -&gt; Card<br /><br />Full name: Poker.c</div>
+<div class="tip" id="fs69">val d : n:int -&gt; Card<br /><br />Full name: Poker.d</div>
+<div class="tip" id="fs70">val a : int<br /><br />Full name: Poker.a</div>
+<div class="tip" id="fs71">val k : int<br /><br />Full name: Poker.k</div>
+<div class="tip" id="fs72">val q : int<br /><br />Full name: Poker.q</div>
+<div class="tip" id="fs73">val j : int<br /><br />Full name: Poker.j</div>
+          
+        </div>
+        <div class="span1"></div>
+      </div>
+    </div>
+  </body>
+</html>
