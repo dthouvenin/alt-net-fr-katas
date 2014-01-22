@@ -1,0 +1,79 @@
+\documentclass[10pt,a4paper,final]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\begin{document}
+Soit $n$ un nombre pair de digits.
+Soit l'ensemble $$E_n=\{10^{\frac{n}{2}-1},...,10^{\frac{n}{2}}-1\}^2$$
+Par exemple $E_4 = \{10,11,12,...,99\}^2$.
+
+On considère le sous ensemble $$C_n = \{(i,j) \in E_n, i\geq j\}$$ 
+
+On munit $C_n$ de la relation d'ordre lexicographique, ie :
+$(i,j) < (k,l)$ ssi $i<k$ ou ($i=k$ et $j<l$).
+
+Soit $(U_k)$ la suite décroissante des éléments de $C_n$.
+
+On peut construire $(U_k)$ avec l'algorithme suivant : 
+\begin{algorithm}
+\caption{Parcourir $C_n$ en décroissance}
+\begin{algorithmic} 
+\STATE $k \leftarrow 0$
+\FOR{$i=10^{\frac{n}{2}}-1$;$i>=10^{\frac{n}{2}-1}$;$i=i-1$}
+\FOR{$j=i$;$j>=10^{\frac{n}{2}-1}$;$j=j-1$}
+\STATE $U_k = (i,j)$
+\STATE $k=k+1$
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+On note $f : C_n \longrightarrow \mathbb{N}$ l'application qui pour un couple $(i,j)$ donne l'indice $k$ correspondant tel que $U_k = (i,j)$.
+
+On note $V_k$ le produit des éléments du couble $U_k$, ie :
+$U_k = (i,j) \Rightarrow V_k = ij$.
+
+On note $D_k$ le premier digit de $V_k$, ex :
+$V_k=4321 \Rightarrow D_k=4$.
+
+On remarque que pour tout couple de type $(i,i)$, on a :
+
+Pour tout $k$ tel que $k > f(i,i)$, alors $i^2>V_k$.
+
+Cela implique :
+
+Pour tout $k$ tel que $k > f(i,i)$, alors $D_{f(i,i)}\geq D_k$
+
+
+Cette constatation nous permet d'améliorer l'algorithme brute force pour trouver les nombres vampires :
+
+Il suffit de monitorer les digits $D_f(i,i)$ et d'exclure les couples $(k,l)<(i,i)$ si $k$ et $l$ sont des nombres dont tout les digits sont strictement supérieurs à $D_{f(i,i)}$, ce test peut être fait de manière efficace ($O(1)$) en monitorant la position dans le couple du digit de poids le plus fort qui permet de ne pas exclure ce couple.
+Par ailleurs, si $D_{f(i,i)} = 0$, alors le nombre de digit représentant $V_f(i,i)$ est inférieur à $n$ et l'algorithme s'arrête.
+\newline
+
+Ci dessous les nombres d'itérations pour le brute force comparé au nombre d'itérations en excluant les couples selon notre critère :
+\newline
+
+\begin{tabular}{lcccc}
+
+  \hline
+    & $n = 4$ & $n=6$ & $n=8$ & $n=10$ \\
+  notre algo & $3426$ & $365140$ & $37285158$ & $3766116479$ \\
+  brute force & $4005$ & $404550$ & $40495500$ & $4049955000$ \\
+  rapport & $85.5\%$ & $90.2\%$ & $92.0\%$ & $92.9\%$\\
+  \hline
+  \end{tabular}
+
+
+
+  
+
+
+
+
+
+\end{document}
+
