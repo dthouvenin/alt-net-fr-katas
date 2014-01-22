@@ -32,4 +32,4 @@ Exercices :
 
 **Rappel de mathématiques** : le nombre de combinaisons (l’ordre n’a pas d’importance) sans répétition (le même élément ne peut pas être pris 2 fois) de k éléments pris dans un ensemble de n éléments se calcule comme suit :
  
-![Formule combinatoires](maths.png) 
+![Formule combinatoires](https://github.com/dthouvenin/alt-net-fr-katas/raw/master/2014-01-22%20Coding%20Breakfast%20%232014.1/maths.png) 
