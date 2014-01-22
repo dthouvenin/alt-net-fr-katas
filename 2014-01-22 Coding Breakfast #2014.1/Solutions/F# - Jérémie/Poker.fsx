@@ -102,13 +102,14 @@ let (|High|_|) hand =
     match hand with
     | GroupCards ((_,1) :: _) ->  Some(List.maxBy value hand)
     | _ -> None
+
 let showHand hand =
     match sort hand with
     | QuinteFlush(c,v) -> sprintf "Quint Flush of %a%a" svalue v scolor c
     | Square(v) -> sprintf "Square of %a" svalue v
-    | Sequence(v) -> sprintf "Sequence of %a" svalue v
-    | HandColor(c) -> sprintf "Color of %a" scolor c 
     | Full(b,p) -> sprintf "Full of %a by %a" svalue b svalue p 
+    | HandColor(c) -> sprintf "Color of %a" scolor c 
+    | Sequence(v) -> sprintf "Sequence of %a" svalue v
     | Brelan(b) -> sprintf "Brelan of %a" svalue b
     | DoublePair(p1, p2) -> sprintf "Double pair of %a and %a" svalue p1 svalue p2
     | Pair(p) -> sprintf "Pair of %a" svalue p
