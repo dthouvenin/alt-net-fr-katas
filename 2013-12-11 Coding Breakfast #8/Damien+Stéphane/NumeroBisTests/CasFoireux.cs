@@ -45,6 +45,12 @@ namespace NumeroBisTests
             AssertEquals(13, "IXIV");
         }
 
+        [TestMethod, ExpectedException(typeof(ArgumentException), "Ce texte n'est pas un nombre romain valide et aurait dû lever une exception", AllowDerivedTypes = true)]
+        public void CMC_n_est_pas_valable()
+        {
+            AssertEquals(1000, "CMC");
+        }
+
         // ReSharper restore InconsistentNaming
     }
 }
