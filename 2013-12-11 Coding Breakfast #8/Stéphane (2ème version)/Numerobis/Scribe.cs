@@ -8,6 +8,8 @@ namespace Numerobis
 {
     public class Scribe
     {
+        string InvalidSequenceErrorMessage = "Invalid Sequence!";
+        
         public int XXX(string RomainNumber)
         {
             Validate(RomainNumber);
@@ -32,14 +34,14 @@ namespace Numerobis
             for (int i = RomainNumber.Length; i > 0; i--)
             {
                 if (ForbiddenValues.Contains(RomainNumber[i - 1].ToString()))
-                    throw new ArgumentException("Sequence not valid!");
+                    throw new ArgumentException(InvalidSequenceErrorMessage);
 
                 int number = Resolve(RomainNumber[i - 1].ToString());
 
                 // si le rapport entre le precedent chiffre et celui la n'est pas entre 5 et 10
                 // la sequence n'est pas valide!
                 if (previous / number > 10)
-                    throw new ArgumentException("Sequence not valid!");
+                    throw new ArgumentException(InvalidSequenceErrorMessage);
 
                 if (previous > number)
                 {
@@ -61,7 +63,7 @@ namespace Numerobis
 
                 // si le même chiffre est présent 4 fois de suite la aussi il y a erreur
                 if (occurence > 3)
-                    throw new ArgumentException("Sequence not valid!");
+                    throw new ArgumentException(InvalidSequenceErrorMessage);
 
                 previous = number;
             }
