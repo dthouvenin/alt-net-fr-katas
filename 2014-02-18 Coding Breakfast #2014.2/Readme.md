@@ -5,7 +5,7 @@ En ce début d'année tellement humide, il m'a paru opportun de s'interesser à 
 
 Trève de n'importe quoi, pas du tout, j'ai simplement vu passer un tweet bordelais sur un groupe de craftsmen jouant avec mle kata "Reversi" de Laurent Bossavit et je me suis dit "Bonne idée".
 
-Reversi (Othello en français) est un jeu de plateau pour deux joueurs qui se joue avec 64 pions dont une face est blanche et l'autre noire.
+[Reversi (Othello en français)](http://fr.wikipedia.org/wiki/Reversi "Voir article sur Wikipedia") est un jeu de plateau pour deux joueurs qui se joue avec 64 pions dont une face est blanche et l'autre noire.
 
 Au début de la partie quatre pièces, 2 noires et 2 blanches sont placées en oppositions au centre du plateau de 8 par 8 cases, comme ceci:
   
