@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- 
+      The Otello
+ parameters will be replaced with the 
+      document title extracted from the <h1> element or
+      file name, if there is no <h1> heading
+    -->
+    <title>Otello
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="content/style.css" />
+    <script src="content/tips.js" type="text/javascript"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="row" style="margin-top:30px">
+        <div class="span1"></div>
+        <div class="span10" id="main">
+          <h1>Otello</h1>
+
+<p><em>Version F# par Jérémie Chassaing / thinkbeforecoding</em></p>
+
+<h2>Dans les grandes lignes</h2>
+
+<p>L'algorithme part des cases de la couleur du joueur, et avance dans chaque direction pour chercher
+une case vide n'ayant que des cases de la couleur adverse la séparant de la couleur du joueur.</p>
+
+<p>La solution retenue n'est probablement pas optimale, mais a l'avantage d'être assez simple.</p>
+
+<p>Le temps de calcul augmente quand on approche de la fin, mais vu la taille du plateau, ca ne pose
+pas vraiment de problème.</p>
+
+<h2>Modèle</h2>
+
+<p>Le contenu des cases est représenté par le type Color:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span class="i">Color</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">White</span> | <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Black</span> | <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Empty</span></pre>
+</td>
+</tr>
+</table>
+
+<p>le plateau est alors un tableau de tableau de 8 * 8</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">Board</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">Color</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">array</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">array</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Nous utiliserons le type <code>position</code> pour localiser les cases du plateau</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">Position</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="i">Position</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">int</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="i">int</span></pre>
+</td>
+</tr>
+</table>
+
+<p>et le type <code>Vector</code> pour indiquer une direction</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="i">Vector</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 13)" onmouseover="showTip(event, 'fs9', 13)" class="i">Vector</span> <span class="k">of</span> <span onmouseout="hideTip(event, 'fs8', 14)" onmouseover="showTip(event, 'fs8', 14)" class="i">int</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs8', 15)" onmouseover="showTip(event, 'fs8', 15)" class="i">int</span>
+    <span class="k">with</span>
+    <span class="k">static</span> <span class="k">member</span> <span class="o">(*)</span> (<span onmouseout="hideTip(event, 'fs10', 16)" onmouseover="showTip(event, 'fs10', 16)" class="i">v</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs9', 17)" onmouseover="showTip(event, 'fs9', 17)" class="i">Vector</span>, <span onmouseout="hideTip(event, 'fs11', 18)" onmouseover="showTip(event, 'fs11', 18)" class="i">i</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs8', 19)" onmouseover="showTip(event, 'fs8', 19)" class="i">int</span>) <span class="o">=</span>
+            <span class="k">match</span> <span onmouseout="hideTip(event, 'fs10', 20)" onmouseover="showTip(event, 'fs10', 20)" class="i">v</span> <span class="k">with</span>
+            | <span onmouseout="hideTip(event, 'fs9', 21)" onmouseover="showTip(event, 'fs9', 21)" class="i">Vector</span>(<span onmouseout="hideTip(event, 'fs12', 22)" onmouseover="showTip(event, 'fs12', 22)" class="i">x</span>,<span onmouseout="hideTip(event, 'fs13', 23)" onmouseover="showTip(event, 'fs13', 23)" class="i">y</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 24)" onmouseover="showTip(event, 'fs9', 24)" class="i">Vector</span> (<span onmouseout="hideTip(event, 'fs12', 25)" onmouseover="showTip(event, 'fs12', 25)" class="i">x</span><span class="o">*</span><span onmouseout="hideTip(event, 'fs11', 26)" onmouseover="showTip(event, 'fs11', 26)" class="i">i</span>, <span onmouseout="hideTip(event, 'fs13', 27)" onmouseover="showTip(event, 'fs13', 27)" class="i">y</span><span class="o">*</span><span onmouseout="hideTip(event, 'fs11', 28)" onmouseover="showTip(event, 'fs11', 28)" class="i">i</span>)
+    <span class="k">static</span> <span class="k">member</span> (<span class="o">+</span>) (<span onmouseout="hideTip(event, 'fs14', 29)" onmouseover="showTip(event, 'fs14', 29)" class="i">p</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs7', 30)" onmouseover="showTip(event, 'fs7', 30)" class="i">Position</span>, <span onmouseout="hideTip(event, 'fs10', 31)" onmouseover="showTip(event, 'fs10', 31)" class="i">v</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs9', 32)" onmouseover="showTip(event, 'fs9', 32)" class="i">Vector</span>)<span class="o">=</span>
+            <span class="k">match</span> <span onmouseout="hideTip(event, 'fs14', 33)" onmouseover="showTip(event, 'fs14', 33)" class="i">p</span>,<span onmouseout="hideTip(event, 'fs10', 34)" onmouseover="showTip(event, 'fs10', 34)" class="i">v</span> <span class="k">with</span>
+            | <span onmouseout="hideTip(event, 'fs7', 35)" onmouseover="showTip(event, 'fs7', 35)" class="i">Position</span>(<span onmouseout="hideTip(event, 'fs12', 36)" onmouseover="showTip(event, 'fs12', 36)" class="i">x</span>,<span onmouseout="hideTip(event, 'fs13', 37)" onmouseover="showTip(event, 'fs13', 37)" class="i">y</span>), <span onmouseout="hideTip(event, 'fs9', 38)" onmouseover="showTip(event, 'fs9', 38)" class="i">Vector</span>(<span onmouseout="hideTip(event, 'fs15', 39)" onmouseover="showTip(event, 'fs15', 39)" class="i">vx</span>,<span onmouseout="hideTip(event, 'fs16', 40)" onmouseover="showTip(event, 'fs16', 40)" class="i">vy</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs7', 41)" onmouseover="showTip(event, 'fs7', 41)" class="i">Position</span>(<span onmouseout="hideTip(event, 'fs12', 42)" onmouseover="showTip(event, 'fs12', 42)" class="i">x</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs15', 43)" onmouseover="showTip(event, 'fs15', 43)" class="i">vx</span>, <span onmouseout="hideTip(event, 'fs13', 44)" onmouseover="showTip(event, 'fs13', 44)" class="i">y</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs16', 45)" onmouseover="showTip(event, 'fs16', 45)" class="i">vy</span>)</pre>
+</td>
+</tr>
+</table>
+
+<p>les operateurs vector * int et position + vector simplifient le code un peu plus loin.</p>
+
+<h2>Construction du plateau</h2>
+
+<p>Rien de bien compliqué ici, on construit un tableau de départ:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 46)" onmouseover="showTip(event, 'fs17', 46)" class="i">board</span> <span class="o">=</span>
+ <span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 47)" onmouseover="showTip(event, 'fs18', 47)" class="i">w</span>, <span onmouseout="hideTip(event, 'fs19', 48)" onmouseover="showTip(event, 'fs19', 48)" class="i">b</span>, <span onmouseout="hideTip(event, 'fs20', 49)" onmouseover="showTip(event, 'fs20', 49)" class="i">e</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 50)" onmouseover="showTip(event, 'fs1', 50)" class="i">White</span>, <span onmouseout="hideTip(event, 'fs2', 51)" onmouseover="showTip(event, 'fs2', 51)" class="i">Black</span>, <span onmouseout="hideTip(event, 'fs3', 52)" onmouseover="showTip(event, 'fs3', 52)" class="i">Empty</span>
+ [| [| <span onmouseout="hideTip(event, 'fs20', 53)" onmouseover="showTip(event, 'fs20', 53)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 54)" onmouseover="showTip(event, 'fs20', 54)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 55)" onmouseover="showTip(event, 'fs20', 55)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 56)" onmouseover="showTip(event, 'fs20', 56)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 57)" onmouseover="showTip(event, 'fs20', 57)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 58)" onmouseover="showTip(event, 'fs20', 58)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 59)" onmouseover="showTip(event, 'fs20', 59)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 60)" onmouseover="showTip(event, 'fs20', 60)" class="i">e</span> |]
+    [| <span onmouseout="hideTip(event, 'fs20', 61)" onmouseover="showTip(event, 'fs20', 61)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 62)" onmouseover="showTip(event, 'fs20', 62)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 63)" onmouseover="showTip(event, 'fs20', 63)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 64)" onmouseover="showTip(event, 'fs20', 64)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 65)" onmouseover="showTip(event, 'fs20', 65)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 66)" onmouseover="showTip(event, 'fs20', 66)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 67)" onmouseover="showTip(event, 'fs20', 67)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 68)" onmouseover="showTip(event, 'fs20', 68)" class="i">e</span> |]
+    [| <span onmouseout="hideTip(event, 'fs20', 69)" onmouseover="showTip(event, 'fs20', 69)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 70)" onmouseover="showTip(event, 'fs20', 70)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 71)" onmouseover="showTip(event, 'fs20', 71)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 72)" onmouseover="showTip(event, 'fs20', 72)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 73)" onmouseover="showTip(event, 'fs20', 73)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 74)" onmouseover="showTip(event, 'fs20', 74)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 75)" onmouseover="showTip(event, 'fs20', 75)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 76)" onmouseover="showTip(event, 'fs20', 76)" class="i">e</span> |]
+    [| <span onmouseout="hideTip(event, 'fs20', 77)" onmouseover="showTip(event, 'fs20', 77)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 78)" onmouseover="showTip(event, 'fs20', 78)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 79)" onmouseover="showTip(event, 'fs20', 79)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs18', 80)" onmouseover="showTip(event, 'fs18', 80)" class="i">w</span>; <span onmouseout="hideTip(event, 'fs19', 81)" onmouseover="showTip(event, 'fs19', 81)" class="i">b</span>; <span onmouseout="hideTip(event, 'fs20', 82)" onmouseover="showTip(event, 'fs20', 82)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 83)" onmouseover="showTip(event, 'fs20', 83)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 84)" onmouseover="showTip(event, 'fs20', 84)" class="i">e</span> |]
+    [| <span onmouseout="hideTip(event, 'fs20', 85)" onmouseover="showTip(event, 'fs20', 85)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 86)" onmouseover="showTip(event, 'fs20', 86)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 87)" onmouseover="showTip(event, 'fs20', 87)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs19', 88)" onmouseover="showTip(event, 'fs19', 88)" class="i">b</span>; <span onmouseout="hideTip(event, 'fs18', 89)" onmouseover="showTip(event, 'fs18', 89)" class="i">w</span>; <span onmouseout="hideTip(event, 'fs20', 90)" onmouseover="showTip(event, 'fs20', 90)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 91)" onmouseover="showTip(event, 'fs20', 91)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 92)" onmouseover="showTip(event, 'fs20', 92)" class="i">e</span> |]
+    [| <span onmouseout="hideTip(event, 'fs20', 93)" onmouseover="showTip(event, 'fs20', 93)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 94)" onmouseover="showTip(event, 'fs20', 94)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 95)" onmouseover="showTip(event, 'fs20', 95)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 96)" onmouseover="showTip(event, 'fs20', 96)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 97)" onmouseover="showTip(event, 'fs20', 97)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 98)" onmouseover="showTip(event, 'fs20', 98)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 99)" onmouseover="showTip(event, 'fs20', 99)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 100)" onmouseover="showTip(event, 'fs20', 100)" class="i">e</span> |]
+    [| <span onmouseout="hideTip(event, 'fs20', 101)" onmouseover="showTip(event, 'fs20', 101)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 102)" onmouseover="showTip(event, 'fs20', 102)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 103)" onmouseover="showTip(event, 'fs20', 103)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 104)" onmouseover="showTip(event, 'fs20', 104)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 105)" onmouseover="showTip(event, 'fs20', 105)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 106)" onmouseover="showTip(event, 'fs20', 106)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 107)" onmouseover="showTip(event, 'fs20', 107)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 108)" onmouseover="showTip(event, 'fs20', 108)" class="i">e</span> |]
+    [| <span onmouseout="hideTip(event, 'fs20', 109)" onmouseover="showTip(event, 'fs20', 109)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 110)" onmouseover="showTip(event, 'fs20', 110)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 111)" onmouseover="showTip(event, 'fs20', 111)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 112)" onmouseover="showTip(event, 'fs20', 112)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 113)" onmouseover="showTip(event, 'fs20', 113)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 114)" onmouseover="showTip(event, 'fs20', 114)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 115)" onmouseover="showTip(event, 'fs20', 115)" class="i">e</span>; <span onmouseout="hideTip(event, 'fs20', 116)" onmouseover="showTip(event, 'fs20', 116)" class="i">e</span> |] |]</pre>
+</td>
+</tr>
+</table>
+
+<h2>getCell</h2>
+
+<p>Cette fonction retourne simplement le contenu de la cellule en x y</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs21', 117)" onmouseover="showTip(event, 'fs21', 117)" class="i">getCell</span> <span onmouseout="hideTip(event, 'fs12', 118)" onmouseover="showTip(event, 'fs12', 118)" class="i">x</span> <span onmouseout="hideTip(event, 'fs13', 119)" onmouseover="showTip(event, 'fs13', 119)" class="i">y</span> <span onmouseout="hideTip(event, 'fs22', 120)" onmouseover="showTip(event, 'fs22', 120)" class="i">board</span> <span class="o">=</span> 
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs23', 121)" onmouseover="showTip(event, 'fs23', 121)" class="i">row</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs24', 122)" onmouseover="showTip(event, 'fs24', 122)" class="i">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 123)" onmouseover="showTip(event, 'fs25', 123)" class="i">get</span> <span onmouseout="hideTip(event, 'fs22', 124)" onmouseover="showTip(event, 'fs22', 124)" class="i">board</span> <span onmouseout="hideTip(event, 'fs13', 125)" onmouseover="showTip(event, 'fs13', 125)" class="i">y</span>
+    <span onmouseout="hideTip(event, 'fs24', 126)" onmouseover="showTip(event, 'fs24', 126)" class="i">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 127)" onmouseover="showTip(event, 'fs25', 127)" class="i">get</span> <span onmouseout="hideTip(event, 'fs23', 128)" onmouseover="showTip(event, 'fs23', 128)" class="i">row</span> <span onmouseout="hideTip(event, 'fs12', 129)" onmouseover="showTip(event, 'fs12', 129)" class="i">x</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>inBoard</h2>
+
+<p>Cette fonction teste si la position est dans les limites du plateau</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs26', 130)" onmouseover="showTip(event, 'fs26', 130)" class="i">inBoard</span> (<span onmouseout="hideTip(event, 'fs7', 131)" onmouseover="showTip(event, 'fs7', 131)" class="i">Position</span>(<span onmouseout="hideTip(event, 'fs12', 132)" onmouseover="showTip(event, 'fs12', 132)" class="i">x</span>,<span onmouseout="hideTip(event, 'fs13', 133)" onmouseover="showTip(event, 'fs13', 133)" class="i">y</span>)) <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs12', 134)" onmouseover="showTip(event, 'fs12', 134)" class="i">x</span> <span class="o">&gt;</span><span class="o">=</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs12', 135)" onmouseover="showTip(event, 'fs12', 135)" class="i">x</span> <span class="o">&lt;</span> <span class="n">8</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs13', 136)" onmouseover="showTip(event, 'fs13', 136)" class="i">y</span> <span class="o">&gt;</span><span class="o">=</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs13', 137)" onmouseover="showTip(event, 'fs13', 137)" class="i">y</span> <span class="o">&lt;</span> <span class="n">8</span></pre>
+</td>
+</tr>
+</table>
+
+<p>Elle est accompagnée d'un active pattern qui indique si la position est dans le plateau</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> (|<span class="i">InBoard</span>|_|) <span onmouseout="hideTip(event, 'fs14', 138)" onmouseover="showTip(event, 'fs14', 138)" class="i">p</span> <span class="o">=</span> <span class="k">if</span> <span onmouseout="hideTip(event, 'fs26', 139)" onmouseover="showTip(event, 'fs26', 139)" class="i">inBoard</span> <span onmouseout="hideTip(event, 'fs14', 140)" onmouseover="showTip(event, 'fs14', 140)" class="i">p</span> <span class="k">then</span> <span onmouseout="hideTip(event, 'fs27', 141)" onmouseover="showTip(event, 'fs27', 141)" class="i">Some</span>() <span class="k">else</span> <span onmouseout="hideTip(event, 'fs28', 142)" onmouseover="showTip(event, 'fs28', 142)" class="i">None</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>find</h2>
+
+<p>La fonction <code>find</code> retourne toutes les cases de la couleur <code>color</code>.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs29', 143)" onmouseover="showTip(event, 'fs29', 143)" class="i">find</span> <span onmouseout="hideTip(event, 'fs30', 144)" onmouseover="showTip(event, 'fs30', 144)" class="i">color</span> <span onmouseout="hideTip(event, 'fs31', 145)" onmouseover="showTip(event, 'fs31', 145)" class="i">board</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs32', 146)" onmouseover="showTip(event, 'fs32', 146)" class="i">seq</span> {
+        <span class="k">for</span> <span onmouseout="hideTip(event, 'fs13', 147)" onmouseover="showTip(event, 'fs13', 147)" class="i">y</span> <span class="k">in</span> [<span class="n">0..</span><span class="n">7</span>] <span class="k">do</span>
+        <span class="k">for</span> <span onmouseout="hideTip(event, 'fs12', 148)" onmouseover="showTip(event, 'fs12', 148)" class="i">x</span> <span class="k">in</span> [<span class="n">0..</span><span class="n">7</span>] <span class="k">do</span>
+        <span class="k">match</span> <span onmouseout="hideTip(event, 'fs31', 149)" onmouseover="showTip(event, 'fs31', 149)" class="i">board</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs21', 150)" onmouseover="showTip(event, 'fs21', 150)" class="i">getCell</span> <span onmouseout="hideTip(event, 'fs12', 151)" onmouseover="showTip(event, 'fs12', 151)" class="i">x</span> <span onmouseout="hideTip(event, 'fs13', 152)" onmouseover="showTip(event, 'fs13', 152)" class="i">y</span> <span class="k">with</span>
+        | <span onmouseout="hideTip(event, 'fs33', 153)" onmouseover="showTip(event, 'fs33', 153)" class="i">c</span> <span class="k">when</span> <span onmouseout="hideTip(event, 'fs33', 154)" onmouseover="showTip(event, 'fs33', 154)" class="i">c</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs30', 155)" onmouseover="showTip(event, 'fs30', 155)" class="i">color</span> <span class="k">-&gt;</span> <span class="k">yield</span> <span onmouseout="hideTip(event, 'fs7', 156)" onmouseover="showTip(event, 'fs7', 156)" class="i">Position</span> (<span onmouseout="hideTip(event, 'fs12', 157)" onmouseover="showTip(event, 'fs12', 157)" class="i">x</span>,<span onmouseout="hideTip(event, 'fs13', 158)" onmouseover="showTip(event, 'fs13', 158)" class="i">y</span>)
+        | _ <span class="k">-&gt;</span> () }</pre>
+</td>
+</tr>
+</table>
+
+<h2>swap</h2>
+
+<p>La fonction <code>swap</code> retourne la couleur oposée</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 159)" onmouseover="showTip(event, 'fs34', 159)" class="i">swap</span> <span class="o">=</span> <span class="k">function</span> <span onmouseout="hideTip(event, 'fs1', 160)" onmouseover="showTip(event, 'fs1', 160)" class="i">White</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs2', 161)" onmouseover="showTip(event, 'fs2', 161)" class="i">Black</span> | <span onmouseout="hideTip(event, 'fs2', 162)" onmouseover="showTip(event, 'fs2', 162)" class="i">Black</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs1', 163)" onmouseover="showTip(event, 'fs1', 163)" class="i">White</span> | <span onmouseout="hideTip(event, 'fs3', 164)" onmouseover="showTip(event, 'fs3', 164)" class="i">Empty</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs3', 165)" onmouseover="showTip(event, 'fs3', 165)" class="i">Empty</span> </pre>
+</td>
+</tr>
+</table>
+
+<h2>isPlayable</h2>
+
+<p>C'est le coeur de l'algorithme.</p>
+
+<p>On part de la position <code>start</code> selon la direction <code>vector</code> un vecteur unitaire.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs35', 166)" onmouseover="showTip(event, 'fs35', 166)" class="i">isPlayable</span>  (<span onmouseout="hideTip(event, 'fs36', 167)" onmouseover="showTip(event, 'fs36', 167)" class="i">start</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs7', 168)" onmouseover="showTip(event, 'fs7', 168)" class="i">Position</span>) (<span onmouseout="hideTip(event, 'fs37', 169)" onmouseover="showTip(event, 'fs37', 169)" class="i">vector</span><span class="o">:</span> <span onmouseout="hideTip(event, 'fs9', 170)" onmouseover="showTip(event, 'fs9', 170)" class="i">Vector</span>) <span onmouseout="hideTip(event, 'fs38', 171)" onmouseover="showTip(event, 'fs38', 171)" class="i">playerColor</span> <span onmouseout="hideTip(event, 'fs39', 172)" onmouseover="showTip(event, 'fs39', 172)" class="i">board</span>  <span class="o">=</span></pre>
+</td>
+</tr>
+</table>
+
+<p>on trouve la couleur de l'adversaire</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 173)" onmouseover="showTip(event, 'fs40', 173)" class="i">otherColor</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs34', 174)" onmouseover="showTip(event, 'fs34', 174)" class="i">swap</span> <span onmouseout="hideTip(event, 'fs38', 175)" onmouseover="showTip(event, 'fs38', 175)" class="i">playerColor</span></pre>
+</td>
+</tr>
+</table>
+
+<p>L'active pattern <code>Cell</code> donne la couleur à la position donnée</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+    <span class="k">let</span> (|<span class="i">Cell</span>|) (<span onmouseout="hideTip(event, 'fs7', 176)" onmouseover="showTip(event, 'fs7', 176)" class="i">Position</span>(<span onmouseout="hideTip(event, 'fs12', 177)" onmouseover="showTip(event, 'fs12', 177)" class="i">x</span>,<span onmouseout="hideTip(event, 'fs13', 178)" onmouseover="showTip(event, 'fs13', 178)" class="i">y</span>)) <span class="o">=</span> 
+         <span onmouseout="hideTip(event, 'fs21', 179)" onmouseover="showTip(event, 'fs21', 179)" class="i">getCell</span> <span onmouseout="hideTip(event, 'fs12', 180)" onmouseover="showTip(event, 'fs12', 180)" class="i">x</span> <span onmouseout="hideTip(event, 'fs13', 181)" onmouseover="showTip(event, 'fs13', 181)" class="i">y</span> <span onmouseout="hideTip(event, 'fs39', 182)" onmouseover="showTip(event, 'fs39', 182)" class="i">board</span></pre>
+</td>
+</tr>
+</table>
+
+<p>La fonction récursive maintient la distance <code>length</code> du point de départ. Une longueur de 1 n'est pas
+suffisante puisque qu'il faut au moins un pion de l'adversaire entre le point de départ et la case à jouer.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+    <span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs41', 183)" onmouseover="showTip(event, 'fs41', 183)" class="i">loop</span> <span onmouseout="hideTip(event, 'fs42', 184)" onmouseover="showTip(event, 'fs42', 184)" class="i">length</span> <span class="o">=</span>
+        <span class="k">let</span> <span onmouseout="hideTip(event, 'fs43', 185)" onmouseover="showTip(event, 'fs43', 185)" class="i">pos</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs36', 186)" onmouseover="showTip(event, 'fs36', 186)" class="i">start</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs37', 187)" onmouseover="showTip(event, 'fs37', 187)" class="i">vector</span> <span class="o">*</span> <span onmouseout="hideTip(event, 'fs42', 188)" onmouseover="showTip(event, 'fs42', 188)" class="i">length</span> 
+        <span class="k">match</span> <span onmouseout="hideTip(event, 'fs43', 189)" onmouseover="showTip(event, 'fs43', 189)" class="i">pos</span> <span class="k">with</span>
+        | <span onmouseout="hideTip(event, 'fs44', 190)" onmouseover="showTip(event, 'fs44', 190)" class="i">InBoard</span> <span class="o">&amp;</span> <span onmouseout="hideTip(event, 'fs45', 191)" onmouseover="showTip(event, 'fs45', 191)" class="i">Cell</span> <span onmouseout="hideTip(event, 'fs46', 192)" onmouseover="showTip(event, 'fs46', 192)" class="i">c</span> <span class="k">when</span> <span onmouseout="hideTip(event, 'fs46', 193)" onmouseover="showTip(event, 'fs46', 193)" class="i">c</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs40', 194)" onmouseover="showTip(event, 'fs40', 194)" class="i">otherColor</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs41', 195)" onmouseover="showTip(event, 'fs41', 195)" class="i">loop</span> (<span onmouseout="hideTip(event, 'fs42', 196)" onmouseover="showTip(event, 'fs42', 196)" class="i">length</span> <span class="o">+</span> <span class="n">1</span>)
+        | <span onmouseout="hideTip(event, 'fs44', 197)" onmouseover="showTip(event, 'fs44', 197)" class="i">InBoard</span> <span class="o">&amp;</span> <span onmouseout="hideTip(event, 'fs45', 198)" onmouseover="showTip(event, 'fs45', 198)" class="i">Cell</span> <span onmouseout="hideTip(event, 'fs3', 199)" onmouseover="showTip(event, 'fs3', 199)" class="i">Empty</span>  <span class="k">when</span> <span onmouseout="hideTip(event, 'fs42', 200)" onmouseover="showTip(event, 'fs42', 200)" class="i">length</span> <span class="o">&gt;</span> <span class="n">1</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs27', 201)" onmouseover="showTip(event, 'fs27', 201)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs43', 202)" onmouseover="showTip(event, 'fs43', 202)" class="i">pos</span>
+        | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 203)" onmouseover="showTip(event, 'fs28', 203)" class="i">None</span>
+    <span onmouseout="hideTip(event, 'fs41', 204)" onmouseover="showTip(event, 'fs41', 204)" class="i">loop</span> <span class="n">1</span></pre>
+</td>
+</tr>
+</table>
+
+<p>On construit ici les 8 vecteurs de directions</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs47', 205)" onmouseover="showTip(event, 'fs47', 205)" class="i">vec</span> <span onmouseout="hideTip(event, 'fs12', 206)" onmouseover="showTip(event, 'fs12', 206)" class="i">x</span> <span onmouseout="hideTip(event, 'fs13', 207)" onmouseover="showTip(event, 'fs13', 207)" class="i">y</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 208)" onmouseover="showTip(event, 'fs9', 208)" class="i">Vector</span>(<span onmouseout="hideTip(event, 'fs12', 209)" onmouseover="showTip(event, 'fs12', 209)" class="i">x</span>,<span onmouseout="hideTip(event, 'fs13', 210)" onmouseover="showTip(event, 'fs13', 210)" class="i">y</span>)
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 211)" onmouseover="showTip(event, 'fs48', 211)" class="i">vectors</span> <span class="o">=</span> [
+    <span onmouseout="hideTip(event, 'fs47', 212)" onmouseover="showTip(event, 'fs47', 212)" class="i">vec</span> <span class="o">-</span><span class="n">1</span> <span class="o">-</span><span class="n">1</span> 
+    <span onmouseout="hideTip(event, 'fs47', 213)" onmouseover="showTip(event, 'fs47', 213)" class="i">vec</span> <span class="o">-</span><span class="n">1</span>  <span class="n">0</span>
+    <span onmouseout="hideTip(event, 'fs47', 214)" onmouseover="showTip(event, 'fs47', 214)" class="i">vec</span> <span class="o">-</span><span class="n">1</span>  <span class="n">1</span>
+    <span onmouseout="hideTip(event, 'fs47', 215)" onmouseover="showTip(event, 'fs47', 215)" class="i">vec</span>  <span class="n">0</span>  <span class="n">1</span>
+    <span onmouseout="hideTip(event, 'fs47', 216)" onmouseover="showTip(event, 'fs47', 216)" class="i">vec</span>  <span class="n">1</span>  <span class="n">1</span>
+    <span onmouseout="hideTip(event, 'fs47', 217)" onmouseover="showTip(event, 'fs47', 217)" class="i">vec</span>  <span class="n">1</span>  <span class="n">0</span>
+    <span onmouseout="hideTip(event, 'fs47', 218)" onmouseover="showTip(event, 'fs47', 218)" class="i">vec</span>  <span class="n">1</span> <span class="o">-</span><span class="n">1</span>
+    <span onmouseout="hideTip(event, 'fs47', 219)" onmouseover="showTip(event, 'fs47', 219)" class="i">vec</span>  <span class="n">0</span> <span class="o">-</span><span class="n">1</span>]</pre>
+</td>
+</tr>
+</table>
+
+<h2>playableCells</h2>
+
+<p>Cette fonction agence les différentes parties pour retourner la solution complète :</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs49', 220)" onmouseover="showTip(event, 'fs49', 220)" class="i">playableCells</span> <span onmouseout="hideTip(event, 'fs50', 221)" onmouseover="showTip(event, 'fs50', 221)" class="i">color</span> <span onmouseout="hideTip(event, 'fs39', 222)" onmouseover="showTip(event, 'fs39', 222)" class="i">board</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs32', 223)" onmouseover="showTip(event, 'fs32', 223)" class="i">seq</span> {
+        <span class="k">for</span> <span onmouseout="hideTip(event, 'fs14', 224)" onmouseover="showTip(event, 'fs14', 224)" class="i">p</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs39', 225)" onmouseover="showTip(event, 'fs39', 225)" class="i">board</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs29', 226)" onmouseover="showTip(event, 'fs29', 226)" class="i">find</span> <span onmouseout="hideTip(event, 'fs50', 227)" onmouseover="showTip(event, 'fs50', 227)" class="i">color</span> <span class="k">do</span>
+        <span class="k">for</span> <span onmouseout="hideTip(event, 'fs10', 228)" onmouseover="showTip(event, 'fs10', 228)" class="i">v</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs48', 229)" onmouseover="showTip(event, 'fs48', 229)" class="i">vectors</span> <span class="k">do</span>
+        <span class="k">match</span> <span onmouseout="hideTip(event, 'fs35', 230)" onmouseover="showTip(event, 'fs35', 230)" class="i">isPlayable</span> <span onmouseout="hideTip(event, 'fs14', 231)" onmouseover="showTip(event, 'fs14', 231)" class="i">p</span> <span onmouseout="hideTip(event, 'fs10', 232)" onmouseover="showTip(event, 'fs10', 232)" class="i">v</span> <span onmouseout="hideTip(event, 'fs50', 233)" onmouseover="showTip(event, 'fs50', 233)" class="i">color</span> <span onmouseout="hideTip(event, 'fs39', 234)" onmouseover="showTip(event, 'fs39', 234)" class="i">board</span> <span class="k">with</span>
+        | <span onmouseout="hideTip(event, 'fs27', 235)" onmouseover="showTip(event, 'fs27', 235)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs51', 236)" onmouseover="showTip(event, 'fs51', 236)" class="i">solution</span> <span class="k">-&gt;</span> <span class="k">yield</span> <span onmouseout="hideTip(event, 'fs51', 237)" onmouseover="showTip(event, 'fs51', 237)" class="i">solution</span>
+        | <span onmouseout="hideTip(event, 'fs28', 238)" onmouseover="showTip(event, 'fs28', 238)" class="i">None</span> <span class="k">-&gt;</span> ()}</pre>
+</td>
+</tr>
+</table>
+
+          <div class="tip" id="fs1">union case Color.White: Color</div>
+<div class="tip" id="fs2">union case Color.Black: Color</div>
+<div class="tip" id="fs3">union case Color.Empty: Color</div>
+<div class="tip" id="fs4">type Board = Color array array<br /><br />Full name: Otello.Board</div>
+<div class="tip" id="fs5">type Color =<br />&#160;&#160;| White<br />&#160;&#160;| Black<br />&#160;&#160;| Empty<br /><br />Full name: Otello.Color</div>
+<div class="tip" id="fs6">type &#39;T array = &#39;T []<br /><br />Full name: Microsoft.FSharp.Core.array&lt;_&gt;</div>
+<div class="tip" id="fs7">Multiple items<br />union case Position.Position: int * int -&gt; Position<br /><br />--------------------<br />type Position = | Position of int * int<br /><br />Full name: Otello.Position</div>
+<div class="tip" id="fs8">Multiple items<br />val int : value:&#39;T -&gt; int (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.int<br /><br />--------------------<br />type int = int32<br /><br />Full name: Microsoft.FSharp.Core.int<br /><br />--------------------<br />type int&lt;&#39;Measure&gt; = int<br /><br />Full name: Microsoft.FSharp.Core.int&lt;_&gt;</div>
+<div class="tip" id="fs9">Multiple items<br />union case Vector.Vector: int * int -&gt; Vector<br /><br />--------------------<br />type Vector =<br />&#160;&#160;| Vector of int * int<br />&#160;&#160;static member ( + ) : p:Position * v:Vector -&gt; Position<br />&#160;&#160;static member ( * ) : v:Vector * i:int -&gt; Vector<br /><br />Full name: Otello.Vector</div>
+<div class="tip" id="fs10">val v : Vector</div>
+<div class="tip" id="fs11">val i : int</div>
+<div class="tip" id="fs12">val x : int</div>
+<div class="tip" id="fs13">val y : int</div>
+<div class="tip" id="fs14">val p : Position</div>
+<div class="tip" id="fs15">val vx : int</div>
+<div class="tip" id="fs16">val vy : int</div>
+<div class="tip" id="fs17">val board : Color [] []<br /><br />Full name: Otello.board</div>
+<div class="tip" id="fs18">val w : Color</div>
+<div class="tip" id="fs19">val b : Color</div>
+<div class="tip" id="fs20">val e : Color</div>
+<div class="tip" id="fs21">val getCell : x:int -&gt; y:int -&gt; board:&#39;a [] [] -&gt; &#39;a<br /><br />Full name: Otello.getCell</div>
+<div class="tip" id="fs22">val board : &#39;a [] []</div>
+<div class="tip" id="fs23">val row : &#39;a []</div>
+<div class="tip" id="fs24">module Array<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs25">val get : array:&#39;T [] -&gt; index:int -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Collections.Array.get</div>
+<div class="tip" id="fs26">val inBoard : Position -&gt; bool<br /><br />Full name: Otello.inBoard</div>
+<div class="tip" id="fs27">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs28">union case Option.None: Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs29">val find : color:&#39;a -&gt; board:&#39;a [] [] -&gt; seq&lt;Position&gt; (requires equality)<br /><br />Full name: Otello.find</div>
+<div class="tip" id="fs30">val color : &#39;a (requires equality)</div>
+<div class="tip" id="fs31">val board : &#39;a [] [] (requires equality)</div>
+<div class="tip" id="fs32">Multiple items<br />val seq : sequence:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Core.Operators.seq<br /><br />--------------------<br />type seq&lt;&#39;T&gt; = System.Collections.Generic.IEnumerable&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.seq&lt;_&gt;</div>
+<div class="tip" id="fs33">val c : &#39;a (requires equality)</div>
+<div class="tip" id="fs34">val swap : _arg1:Color -&gt; Color<br /><br />Full name: Otello.swap</div>
+<div class="tip" id="fs35">val isPlayable : start:Position -&gt; vector:Vector -&gt; playerColor:Color -&gt; board:Color [] [] -&gt; Position option<br /><br />Full name: Otello.isPlayable</div>
+<div class="tip" id="fs36">val start : Position</div>
+<div class="tip" id="fs37">val vector : Vector</div>
+<div class="tip" id="fs38">val playerColor : Color</div>
+<div class="tip" id="fs39">val board : Color [] []</div>
+<div class="tip" id="fs40">val otherColor : Color</div>
+<div class="tip" id="fs41">val loop : (int -&gt; Position option)</div>
+<div class="tip" id="fs42">val length : int</div>
+<div class="tip" id="fs43">val pos : Position</div>
+<div class="tip" id="fs44">active recognizer InBoard: Position -&gt; unit option<br /><br />Full name: Otello.( |InBoard|_| )</div>
+<div class="tip" id="fs45">active recognizer Cell: Position -&gt; Color</div>
+<div class="tip" id="fs46">val c : Color</div>
+<div class="tip" id="fs47">val vec : x:int -&gt; y:int -&gt; Vector<br /><br />Full name: Otello.vec</div>
+<div class="tip" id="fs48">val vectors : Vector list<br /><br />Full name: Otello.vectors</div>
+<div class="tip" id="fs49">val playableCells : color:Color -&gt; board:Color [] [] -&gt; seq&lt;Position&gt;<br /><br />Full name: Otello.playableCells</div>
+<div class="tip" id="fs50">val color : Color</div>
+<div class="tip" id="fs51">val solution : Position</div>
+          
+        </div>
+        <div class="span1"></div>
+      </div>
+    </div>
+  </body>
+</html>
