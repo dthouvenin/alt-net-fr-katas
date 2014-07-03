@@ -14,6 +14,7 @@ namespace Mazes.Core
         private int y;
         private int Width;
         private int Height;
+        private Position startPosition;
         private Direction direction;
         private Position[] Moves = new Position[]
                                        {
@@ -41,9 +42,9 @@ namespace Mazes.Core
             ClearMaze();
             builder.Build(this);
             MazeHasBeenBuilt(Width, Height);
-            var pos = builder.MazeStartPosition;
-            x = pos.X;
-            y = pos.Y;
+            startPosition = builder.MazeStartPosition;
+            x = startPosition.X;
+            y = startPosition.Y;
             direction = Direction.East;
             MouseHasMoved(new Position(x, y));
             MouseHasTurned(direction);
@@ -57,6 +58,22 @@ namespace Mazes.Core
             for (var w = 0; w < Width; w++)
                 for (var h = 0; h <= Height; h++)
                     HWalls[w, h] = false;
+        }
+
+        public void Draw(IMazeDrawer drawer)
+        {
+            if (drawer == null)
+                throw new ArgumentNullException("drawer");
+            drawer.StartLayout(Width, Height);
+            for (var w = 0; w < Width; w++)
+                for (var h = 0; h <= Height; h++)
+                    if (HWalls[w, h])
+                        drawer.DrawWall(new Position(w, h), new Position(w + 1, h));
+            for (var w = 0; w <= Width; w++)
+                for (var h = 0; h < Height; h++)
+                    if (VWalls[w, h])
+                        drawer.DrawWall(new Position(w, h), new Position(w, h + 1));
+            drawer.LayoutDone();
         }
 
         #region Implementation of IMaze
@@ -152,20 +169,6 @@ namespace Mazes.Core
             }
         }
 
-        public void Draw(IMazeDrawer drawer)
-        {
-            if(drawer == null)
-                throw new ArgumentNullException("drawer");
-            for (var w = 0; w < Width; w++)
-                for (var h = 0; h <= Height; h++)
-                    if(HWalls[w, h])
-                        drawer.DrawWall(new Position(w, h), new Position(w+1, h));
-            for (var w = 0; w <= Width; w++)
-                for (var h = 0; h < Height; h++)
-                    if (HWalls[w, h])
-                        drawer.DrawWall(new Position(w, h), new Position(w, h+1));
-        }
-
         private void MouseWantsToMove()
         {
             lock (watchers)
@@ -206,8 +209,17 @@ namespace Mazes.Core
                 {
                     mazeWatcher.MouseHasExitedMaze();
                 }
+                Reset();
             }
         }
+
+        public void Reset()
+        {
+            x = startPosition.X;
+            y = startPosition.Y;
+            direction = Direction.East;
+        }
+
         private void MazeHasBeenBuilt(int width, int height)
         {
             lock (watchers)

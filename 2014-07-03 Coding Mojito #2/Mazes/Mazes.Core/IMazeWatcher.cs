@@ -21,12 +21,14 @@ namespace Mazes.Core
     }
     public interface IMazeDrawer
     {
+        void StartLayout(int width, int height);
+        void LayoutDone();
         void DrawWall(Position fromPos, Position toPos);
         void DrawMouse(Position position, Direction direction);
     }
     public interface IMazeWatcher
     {
-        void MazeHasBeenBuilt(int with, int height);
+        void MazeHasBeenBuilt(int width, int height);
         
         void MouseWantsToMove();
         void MouseHasMoved(Position newPosition);

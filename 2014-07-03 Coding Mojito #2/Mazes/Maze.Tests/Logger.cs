@@ -52,7 +52,7 @@ namespace Mazes.Tests
         }
     }
     
-    class LogWatcher : IMazeWatcher, IMazeDrawer
+    class LogWatcher : IMazeWatcher
     {
         public readonly Stack<Event> Events = new Stack<Event>();
 
@@ -94,13 +94,6 @@ namespace Mazes.Tests
         {
         }
 
-        public void DrawWall(Position fromPos, Position toPos)
-        {
-        }
-
-        public void DrawMouse(Position position, Direction direction)
-        {
-        }
     }
 
 }
