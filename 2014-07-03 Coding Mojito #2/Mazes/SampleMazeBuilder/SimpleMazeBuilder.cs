@@ -17,12 +17,12 @@ namespace SampleMazeBuilder
         public void Build(IBuildableMaze maze)
         {
             /*
-                _ _ _
-               |  _| |
-               |_   _| 
-               |_ _  |
+             _ _ _
+            |  _| |
+            |_   _| 
+            |_ _  |
   
-             */
+            */
             maze.AddHorizontalWall(0, 0);
             maze.AddHorizontalWall(1, 0);
             maze.AddHorizontalWall(2, 0);
@@ -46,6 +46,4 @@ namespace SampleMazeBuilder
             get { return new Position(0, 0); }
         }
     }
-
-    
 }
