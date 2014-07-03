@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using Mazes.Core;
 
-namespace WindowsFormsApplication1
+namespace Mazes.Runner
 {
     public partial class MainForm : Form, IMazeWatcher
     {
@@ -24,7 +24,6 @@ namespace WindowsFormsApplication1
 
         void IMazeWatcher.MazeHasBeenBuilt(int with, int height)
         {
-            drawer
         }
 
         void IMazeWatcher.MouseWantsToMove()

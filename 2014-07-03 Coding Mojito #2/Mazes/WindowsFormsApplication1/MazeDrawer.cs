@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using Mazes.Core;
 
-namespace WindowsFormsApplication1
+namespace Mazes.Runner
 {
     public class MazeDrawer: Control, IMazeDrawer
     {

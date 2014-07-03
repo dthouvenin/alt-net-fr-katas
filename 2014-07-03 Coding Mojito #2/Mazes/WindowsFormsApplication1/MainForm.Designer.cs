@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApplication1
+﻿namespace Mazes.Runner
 {
     partial class MainForm
     {

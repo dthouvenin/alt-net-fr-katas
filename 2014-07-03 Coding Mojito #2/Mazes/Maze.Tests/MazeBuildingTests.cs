@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Mazes.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SampleMazeBuilder;
 
-namespace Maze.Tests
+namespace Mazes.Tests
 {
-
-
-
     [TestClass]
     public class MazeBuildingTests
     {

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mazes.Core;
+﻿using Mazes.Core;
 
-namespace Maze.Tests
+namespace SampleMazeBuilder
 {
-    class SimpleMazeBuilder : IMazeBuilder
+    public class SimpleMazeBuilder : IMazeBuilder
     {
         public int Height
         {
@@ -22,7 +18,7 @@ namespace Maze.Tests
         {
             /*
                 _ _ _
-               |> _| |
+               |  _| |
                |_   _| 
                |_ _  |
   

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Mazes.Core;
 
-namespace Maze.Tests
+namespace Mazes.Tests
 {
     class Event
     {

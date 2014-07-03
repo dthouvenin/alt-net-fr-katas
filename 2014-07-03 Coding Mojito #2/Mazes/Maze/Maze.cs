@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Mazes.Core;
 
-namespace Maze
+namespace Mazes.Core
 {
     public class Maze: IMaze, IBuildableMaze, IMouse, IDisposable
     {

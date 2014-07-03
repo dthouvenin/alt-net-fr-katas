@@ -8,7 +8,7 @@
     <ProjectGuid>{A66A91DA-A884-450D-A1C2-F26D7DE5FA66}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Maze</RootNamespace>
+    <RootNamespace>Mazes.Core</RootNamespace>
     <AssemblyName>Maze</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
