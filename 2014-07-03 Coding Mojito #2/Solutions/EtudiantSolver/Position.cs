@@ -1,4 +1,4 @@
-namespace MyMazeSolver
+namespace EtudiantSolver
 {
     public class Position
     {

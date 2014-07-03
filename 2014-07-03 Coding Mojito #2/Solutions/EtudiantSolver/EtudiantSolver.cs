@@ -2,9 +2,9 @@
 using System.Linq;
 using Mazes.Core;
 
-namespace MyMazeSolver
+namespace EtudiantSolver
 {
-    public class MySolver : IMazeSolver
+    public class EtudiantSolver : IMazeSolver
     {
         private readonly List<Position> casesDejaVisité = new List<Position>();
         private Position currentPosition;

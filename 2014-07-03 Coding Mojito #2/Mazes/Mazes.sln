@@ -30,7 +30,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleMazeMedium", "SampleM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleComplexMaze", "SampleComplexMaze\SampleComplexMaze.csproj", "{BD98F97D-1BE6-44F5-99CE-31FEB65EEB19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMazeSolver", "MyMazeSolver\MyMazeSolver.csproj", "{FEE04903-D792-453B-92A1-0C30C9ABAA30}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EtudiantSolver", "..\Solutions\EtudiantSolver\EtudiantSolver.csproj", "{FEE04903-D792-453B-92A1-0C30C9ABAA30}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

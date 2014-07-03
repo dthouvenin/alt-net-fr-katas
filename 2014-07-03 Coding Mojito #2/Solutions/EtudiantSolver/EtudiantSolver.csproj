@@ -7,8 +7,8 @@
     <ProjectGuid>{FEE04903-D792-453B-92A1-0C30C9ABAA30}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyMazeSolver</RootNamespace>
-    <AssemblyName>MyMazeSolver</AssemblyName>
+    <RootNamespace>EtudiantSolver</RootNamespace>
+    <AssemblyName>EtudiantSolver</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,11 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MySolver.cs" />
+    <Compile Include="EtudiantSolver.cs" />
+    <Compile Include="Position.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mazes.Core\Mazes.Core.csproj">
+    <ProjectReference Include="..\..\Mazes\Mazes.Core\Mazes.Core.csproj">
       <Project>{F1958351-B27A-45CE-8571-6E73F1ABC7D1}</Project>
       <Name>Mazes.Core</Name>
     </ProjectReference>
