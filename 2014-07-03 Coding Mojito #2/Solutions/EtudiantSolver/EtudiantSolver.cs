@@ -6,11 +6,11 @@ namespace EtudiantSolver
 {
     public class EtudiantSolver : IMazeSolver
     {
-        private readonly List<Position> casesDejaVisité = new List<Position>();
+        private List<Position> alreadyVisitedList;
         private Position currentPosition;
         // O gauche, 1 haut, 2 droite, 3 bas
         private int direction;
-        private int hasMoved;
+        private int turnWithoutMove;
         private IMaze maze;
         private IMouse mouse;
 
@@ -19,7 +19,7 @@ namespace EtudiantSolver
             this.maze = maze;
             this.mouse = mouse;
             this.currentPosition = new Position(0, 0);
-            this.casesDejaVisité.Add(this.currentPosition);
+            this.alreadyVisitedList = new List<Position> {this.currentPosition};
         }
 
         public void YourTurn()
@@ -27,28 +27,27 @@ namespace EtudiantSolver
             if (this.maze.CanIMove())
             {
                 var frontPosition = GetFrontPosition();
-                var exist =
-                    this.casesDejaVisité.FirstOrDefault(c => c.X == frontPosition.X && c.Y == frontPosition.Y);
-                if (exist == null || this.hasMoved > 3)
+                var exist = this.alreadyVisitedList.FirstOrDefault(c => c.IsEqual(frontPosition));
+                if (exist == null || this.turnWithoutMove > 3)
                 {
-                    this.currentPosition = GetFrontPosition();
+                    this.currentPosition = frontPosition;
                     this.mouse.Move();
                     if (exist == null)
-                        this.casesDejaVisité.Add(this.currentPosition);
-                    this.hasMoved = 0;
+                        this.alreadyVisitedList.Add(this.currentPosition);
+                    this.turnWithoutMove = 0;
                 }
                 else
                 {
                     this.direction = (this.direction + 1)%4;
                     this.mouse.TurnRight();
-                    this.hasMoved++;
+                    this.turnWithoutMove++;
                 }
             }
             else
             {
                 this.direction = (this.direction + 1)%4;
                 this.mouse.TurnRight();
-                this.hasMoved++;
+                this.turnWithoutMove++;
             }
         }
 

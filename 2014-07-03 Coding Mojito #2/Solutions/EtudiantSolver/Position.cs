@@ -22,5 +22,10 @@ namespace EtudiantSolver
 
         public int X { get; private set; }
         public int Y { get; private set; }
+
+        public bool IsEqual(Position position)
+        {
+            return position != null && (this.X == position.X && this.Y == position.Y);
+        }
     }
 }
