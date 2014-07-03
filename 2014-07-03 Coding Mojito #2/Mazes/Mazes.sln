@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mazes.Runner.Tests", "Mazes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleMazeBuilder.Tests", "SampleMazeBuilder.Tests\SampleMazeBuilder.Tests.csproj", "{DCEDBD2A-1EA8-4FE2-94AF-B9F6951997B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleMazeMedium", "SampleMazeMedium\SampleMazeMedium.csproj", "{8538766A-F46C-4337-989C-8E649031E4CB}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Mazes.vsmdi
@@ -117,6 +119,16 @@ Global
 		{DCEDBD2A-1EA8-4FE2-94AF-B9F6951997B1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DCEDBD2A-1EA8-4FE2-94AF-B9F6951997B1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DCEDBD2A-1EA8-4FE2-94AF-B9F6951997B1}.Release|x86.ActiveCfg = Release|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8538766A-F46C-4337-989C-8E649031E4CB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
