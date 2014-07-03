@@ -78,7 +78,7 @@ namespace Mazes.Runner
                 {
                     graphics.FillRectangle(backBrush, new Rectangle(0, 0, drawSize.Width, drawSize.Height));
                 }
-                using (var gridPen = new Pen(Color.DarkGray, 0.25f))
+                using (var gridPen = new Pen(Color.Orange, 0.25f))
                 {
                     gridPen.DashStyle = DashStyle.Dot;
                     graphics.DrawRectangle(gridPen, 0, 0, drawSize.Width, drawSize.Height);
@@ -93,7 +93,7 @@ namespace Mazes.Runner
                         graphics.DrawLine(gridPen, 0, i * pixelsPerSquare, drawSize.Width, i * pixelsPerSquare);
                     }
                 }
-                using (var wallsPen = new Pen(Color.White, 3))
+                using (var wallsPen = new Pen(Color.White, 4))
                 {
                     foreach (var line in Lines)
                     {
@@ -119,7 +119,7 @@ namespace Mazes.Runner
                 using (var backBrush = new SolidBrush(Color.Fuchsia))
                 {
                     graphics.FillRectangle(backBrush, new Rectangle(0, 0, size, size));
-                    using (var brush = new SolidBrush(Color.GhostWhite))
+                    using (var brush = new SolidBrush(Color.OrangeRed))
                     {
                         graphics.FillEllipse(brush, new Rectangle(0, size / 8, size, 3 * size / 4));
                     }
