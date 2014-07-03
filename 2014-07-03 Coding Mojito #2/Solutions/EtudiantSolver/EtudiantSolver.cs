@@ -33,7 +33,8 @@ namespace EtudiantSolver
                 {
                     this.currentPosition = GetFrontPosition();
                     this.mouse.Move();
-                    this.casesDejaVisité.Add(this.currentPosition);
+                    if (exist == null)
+                        this.casesDejaVisité.Add(this.currentPosition);
                     this.hasMoved = 0;
                 }
                 else
