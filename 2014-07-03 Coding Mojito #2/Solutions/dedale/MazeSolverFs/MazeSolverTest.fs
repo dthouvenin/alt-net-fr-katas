@@ -31,12 +31,13 @@ type MockMaze(moves : bool list) =
         member this.AmIOut() =
             false
 
-let play walls actions =
+let play walls actions n =
     let maze = MockMaze(walls)
     let mouse = MockMouse()
     let solver = MazeSolver() :> IMazeSolver
     solver.Init(maze :> IMaze, mouse :> IMouse)
-    solver.YourTurn()
+    for i in 1 .. n do
+        solver.YourTurn()
     List.rev mouse.Actions |> should equal actions
 
 [<Fact>]
@@ -48,12 +49,20 @@ let ``init`` () =
 
 [<Fact>]
 let ``move and turn right if can move`` () =
-    play [ true ] [ Move ; TurnRight ]
+    play [ true ] [ Move ; TurnRight ] 1
 
 [<Fact>]
 let ``turn left if cannot move`` () =
-    play [ false ; true ] [ TurnLeft ; Move ; TurnRight ]
+    play [ false ; true ] [ TurnLeft ; Move ; TurnRight ] 1
 
 [<Fact>]
 let ``turn left while cannot move`` () =
-    play [ false ; false ; false ; true ] [ TurnLeft ; TurnLeft ; TurnLeft ; Move ; TurnRight ]
+    play [ false ; false ; false ; true ] [ TurnLeft ; TurnLeft ; TurnLeft ; Move ; TurnRight ] 1
+
+[<Fact>]
+let ``step back if stuck`` () =
+    play [ true ; false ; false ; false ] [ Move ; TurnRight ; TurnLeft ; TurnLeft ; TurnLeft ; Move ; TurnRight ] 2
+
+[<Fact>]
+let ``no cycle without walls`` () =
+    play [ true ; true ; true ; true ; true ] [ Move ; TurnRight ; Move ; TurnRight ; Move ; TurnRight ; TurnLeft ; Move ; TurnRight ] 4
