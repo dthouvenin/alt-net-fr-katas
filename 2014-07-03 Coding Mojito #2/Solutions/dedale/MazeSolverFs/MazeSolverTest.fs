@@ -31,6 +31,14 @@ type MockMaze(moves : bool list) =
         member this.AmIOut() =
             false
 
+let play walls actions =
+    let maze = MockMaze(walls)
+    let mouse = MockMouse()
+    let solver = MazeSolver() :> IMazeSolver
+    solver.Init(maze :> IMaze, mouse :> IMouse)
+    solver.YourTurn()
+    List.rev mouse.Actions |> should equal actions
+
 [<Fact>]
 let ``init`` () =
     let maze = MockMaze([])
@@ -40,27 +48,12 @@ let ``init`` () =
 
 [<Fact>]
 let ``move and turn right if can move`` () =
-    let maze = MockMaze([ true ])
-    let mouse = MockMouse()
-    let solver = MazeSolver() :> IMazeSolver
-    solver.Init(maze :> IMaze, mouse :> IMouse)
-    solver.YourTurn()
-    List.rev mouse.Actions |> should equal [ Move ; TurnRight ]
+    play [ true ] [ Move ; TurnRight ]
 
 [<Fact>]
 let ``turn left if cannot move`` () =
-    let maze = MockMaze([ false ; true ])
-    let mouse = MockMouse()
-    let solver = MazeSolver() :> IMazeSolver
-    solver.Init(maze :> IMaze, mouse :> IMouse)
-    solver.YourTurn()
-    List.rev mouse.Actions |> should equal [ TurnLeft ; Move ; TurnRight ]
+    play [ false ; true ] [ TurnLeft ; Move ; TurnRight ]
 
 [<Fact>]
 let ``turn left while cannot move`` () =
-    let maze = MockMaze([ false ; false ; false ; true ])
-    let mouse = MockMouse()
-    let solver = MazeSolver() :> IMazeSolver
-    solver.Init(maze :> IMaze, mouse :> IMouse)
-    solver.YourTurn()
-    List.rev mouse.Actions |> should equal [ TurnLeft ; TurnLeft ; TurnLeft ; Move ; TurnRight ]
+    play [ false ; false ; false ; true ] [ TurnLeft ; TurnLeft ; TurnLeft ; Move ; TurnRight ]
