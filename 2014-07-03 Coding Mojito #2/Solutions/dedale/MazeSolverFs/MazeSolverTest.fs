@@ -70,3 +70,7 @@ let ``no cycle without walls`` () =
 [<Fact>]
 let ``step back in corridor`` () =
     play [ true ; false ; true ; false ; false ; false ] [ Move ; TurnRight ; TurnLeft ; Move ; TurnRight ; TurnLeft ; TurnLeft ; TurnLeft ; Move ; TurnRight ] 3
+
+[<Fact>]
+let ``step back in corridor and exit left`` () =
+    play [ true ; false ; true ; false ; false ; false ; true ] [ Move ; TurnRight ; TurnLeft ; Move ; TurnRight ; TurnLeft ; TurnLeft ; TurnLeft ; Move ; TurnRight ; Move ; TurnRight ] 4

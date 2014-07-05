@@ -43,10 +43,12 @@ type MazeSolver() =
             | Right -> Down
             | Down -> Left
             | Left -> Up
-    let move () =
-        _history <- _direction :: _history
+    let moveOnly () =
         _mouse.Move()
         _position <- next _position _direction
+    let move () =
+        _history <- _direction :: _history
+        moveOnly()
         _visited.Add _position |> ignore
     let canMove () =
         not (_visited.Contains(next _position _direction)) && _maze.CanIMove()
@@ -76,5 +78,7 @@ type MazeSolver() =
                     | Left -> Right
                 while _direction <> mirror do
                     turnRight()
-            move()
+                moveOnly()
+            else
+                move()
             turnRight()
