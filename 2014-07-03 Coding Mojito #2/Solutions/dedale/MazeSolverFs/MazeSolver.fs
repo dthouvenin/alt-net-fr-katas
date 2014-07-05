@@ -47,6 +47,7 @@ type MazeSolver() =
         _history <- _direction :: _history
         _mouse.Move()
         _position <- next _position _direction
+        _visited.Add _position |> ignore
     let canMove () =
         not (_visited.Contains(next _position _direction)) && _maze.CanIMove()
     interface IMazeSolver with

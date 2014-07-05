@@ -19,7 +19,7 @@ type MockMouse() =
         member this.TurnRight() =
             actions <- TurnRight :: actions
 
-type MockMaze(moves : bool list) =
+type FakeMaze(moves : bool list) =
     let mutable _moves = moves
     interface IMaze with
         member this.CanIMove() =
@@ -32,7 +32,7 @@ type MockMaze(moves : bool list) =
             false
 
 let play walls actions n =
-    let maze = MockMaze(walls)
+    let maze = FakeMaze(walls)
     let mouse = MockMouse()
     let solver = MazeSolver() :> IMazeSolver
     solver.Init(maze :> IMaze, mouse :> IMouse)
@@ -42,7 +42,7 @@ let play walls actions n =
 
 [<Fact>]
 let ``init`` () =
-    let maze = MockMaze([])
+    let maze = FakeMaze([])
     let mouse = MockMouse()
     let solver = MazeSolver() :> IMazeSolver
     solver.Init(maze :> IMaze, mouse :> IMouse)
@@ -66,3 +66,7 @@ let ``step back if stuck`` () =
 [<Fact>]
 let ``no cycle without walls`` () =
     play [ true ; true ; true ; true ; true ] [ Move ; TurnRight ; Move ; TurnRight ; Move ; TurnRight ; TurnLeft ; Move ; TurnRight ] 4
+
+[<Fact>]
+let ``step back in corridor`` () =
+    play [ true ; false ; true ; false ; false ; false ] [ Move ; TurnRight ; TurnLeft ; Move ; TurnRight ; TurnLeft ; TurnLeft ; TurnLeft ; Move ; TurnRight ] 3
