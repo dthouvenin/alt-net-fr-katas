@@ -56,6 +56,10 @@ type MazeSolver() =
         member this.Init(maze, mouse) =
             _maze <- maze
             _mouse <- mouse
+            _direction <- Up
+            _position <- Position(0, 0)
+            _visited.Clear()
+            _history <- []
             _visited.Add _position |> ignore
         member this.YouLoose() =
             ()

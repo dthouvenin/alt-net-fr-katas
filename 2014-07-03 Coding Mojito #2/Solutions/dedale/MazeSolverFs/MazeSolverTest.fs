@@ -31,14 +31,17 @@ type FakeMaze(moves : bool list) =
         member this.AmIOut() =
             false
 
-let play walls actions n =
+let playSolver (solver: IMazeSolver) walls actions n =
     let maze = FakeMaze(walls)
     let mouse = MockMouse()
-    let solver = MazeSolver() :> IMazeSolver
     solver.Init(maze :> IMaze, mouse :> IMouse)
     for i in 1 .. n do
         solver.YourTurn()
     List.rev mouse.Actions |> should equal actions
+
+let play walls actions n =
+    let solver = MazeSolver() :> IMazeSolver
+    playSolver solver walls actions n
 
 [<Fact>]
 let ``init`` () =
@@ -74,3 +77,11 @@ let ``step back in corridor`` () =
 [<Fact>]
 let ``step back in corridor and exit left`` () =
     play [ true ; false ; true ; false ; false ; false ; true ] [ Move ; TurnRight ; TurnLeft ; Move ; TurnRight ; TurnLeft ; TurnLeft ; TurnLeft ; Move ; TurnRight ; Move ; TurnRight ] 4
+
+[<Fact>]
+let ``init twice`` () =
+    let solver = MazeSolver() :> IMazeSolver
+    for i in 1 .. 2 do
+        playSolver solver [ true ; true ; true ; true ] [ Move ; TurnRight ; Move ; TurnRight ; Move ; TurnRight ; TurnLeft ; Move ; TurnRight ] 4
+
+    
