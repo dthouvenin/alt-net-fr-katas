@@ -11,11 +11,15 @@ namespace Mazes.Runner
         /// Point d'entrée principal de l'application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] commandLineArguments)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+
+            string builderPath = commandLineArguments.Length > 0 ? commandLineArguments[0] : null;
+            string solverPath = commandLineArguments.Length > 1 ? commandLineArguments[1] : null;
+
+            Application.Run(new MainForm(builderPath, solverPath));
         }
     }
 }
