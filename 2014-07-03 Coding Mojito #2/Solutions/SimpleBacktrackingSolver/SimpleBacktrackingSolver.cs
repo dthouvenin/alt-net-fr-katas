@@ -14,6 +14,39 @@ namespace Altnet.Katas.CodingMojito
         North
     }
 
+    public class Coordinates
+    {
+        public Coordinates(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        protected bool Equals(Coordinates other)
+        {
+            return X == other.X && Y == other.Y;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Coordinates) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (X*397) ^ Y;
+            }
+        }
+    }
+
     public class PathNode
     {
         public int X { get; set; }
@@ -28,50 +61,7 @@ namespace Altnet.Katas.CodingMojito
             RoutesTaken = new Dictionary<Direction, PathNode>();
         }
     }
-
-    public class Move : IEquatable<Move>
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public Direction Direction { get; set; }
-
-        public bool Equals(Move other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return X == other.X && Y == other.Y && Direction == other.Direction;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Move) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = X;
-                hashCode = (hashCode*397) ^ Y;
-                hashCode = (hashCode*397) ^ (int) Direction;
-                return hashCode;
-            }
-        }
-
-        public static bool operator ==(Move left, Move right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(Move left, Move right)
-        {
-            return !Equals(left, right);
-        }
-    }
-
+    
     public class SimpleBacktrackingSolver : IMazeSolver
     {
         private IMaze maze;
@@ -88,11 +78,16 @@ namespace Altnet.Katas.CodingMojito
             currentDirection = Direction.East;
             pathRoot = CreateNodeFromCurrentPosition(null);
             currentNode = pathRoot;
+            nodesVisited = new Dictionary<Coordinates, PathNode>
+            {
+                { new Coordinates(0,0), pathRoot},
+            };
         }
 
         private int currentX, currentY;
         private Direction currentDirection;
         private PathNode currentNode;
+        private Dictionary<Coordinates, PathNode> nodesVisited;
 
         public PathNode CreateNodeFromCurrentPosition(PathNode origin)
         {
@@ -119,14 +114,30 @@ namespace Altnet.Katas.CodingMojito
             {
 				Face(nextMove.Value);
                 Move();
-                var newNode = CreateNodeFromCurrentPosition(currentNode);
-                currentNode.RoutesTaken.Add(currentDirection, newNode);
-                currentNode = newNode;
+                var nextNode = UpdateNextNode();
+                currentNode.RoutesTaken.Add(currentDirection, nextNode);
+                currentNode = nextNode;
             }
             else
             {
                 GoBack();
             }
+        }
+
+        private PathNode UpdateNextNode()
+        {
+            PathNode nextNode;
+            var currentCoordinates = new Coordinates(currentX, currentY);
+            if (nodesVisited.TryGetValue(currentCoordinates, out nextNode))
+            {
+                FindOpenDirectionsOfNode(nextNode);
+            }
+            else
+            {
+                nextNode = CreateNodeFromCurrentPosition(currentNode);
+                nodesVisited.Add(currentCoordinates, nextNode);
+            }
+            return nextNode;
         }
 
         private void GoBack()
