@@ -47,6 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Coordinates.cs" />
+    <Compile Include="Direction.cs" />
+    <Compile Include="IDebuggingMouse.cs" />
+    <Compile Include="Move.cs" />
+    <Compile Include="PathNode.cs" />
     <Compile Include="SimpleBacktrackingSolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
