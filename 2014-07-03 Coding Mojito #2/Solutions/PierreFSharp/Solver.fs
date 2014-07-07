@@ -9,23 +9,22 @@ type Direction =
     | West
     | North
 
+type Turn =
+    | Right
+    | Around
+    | Left
+
 type public Solver() =
     let mutable maze:IMaze = null
     let mutable mouse:IMouse = null
     let mutable enumerator:IEnumerator<unit> = null
 
-    let run direction (x, y) =
+    let applyMove direction (x, y) =
         match direction with
         | East -> x + 1, y
         | South -> x, y + 1
         | West -> x - 1, y
         | North -> x, y - 1
-
-    let turnRight = function
-        | East -> South
-        | South -> West
-        | West -> North
-        | North -> East
 
     let solve () =
         let position = ref (0, 0)
@@ -34,28 +33,56 @@ type public Solver() =
 
         let isValidMove () =
             maze.CanIMove()
-            && not ((!visited).Contains(!position |> run (!direction)))
+            && not ((!visited).Contains(!position |> applyMove (!direction)))
 
         let move () = mouse.Move()
-                      position := !position |> run (!direction)
+                      position := !position |> applyMove (!direction)
                       visited := !visited |> Set.add (!position)
-        let turn () = mouse.TurnRight()
-                      direction := !direction |> turnRight
 
-        let rec tryMove () = seq {
-            for direction in 1 .. 4 do
+        let rec turn clockwiseSteps =
+            if clockwiseSteps > 0 then
+                mouse.TurnRight()
+                direction :=
+                    match !direction with
+                    | East -> South
+                    | South -> West
+                    | West -> North
+                    | North -> East
+                turn (clockwiseSteps - 1)
+            else if clockwiseSteps < 0 then
+                mouse.TurnLeft()
+                direction :=
+                    match !direction with
+                    | South -> East
+                    | West -> South
+                    | North -> West
+                    | East -> North
+                turn (clockwiseSteps + 1)
+
+        let getClockwiseSteps = function
+                                | Right -> 1
+                                | Around -> 2
+                                | Left -> -1
+
+
+        let rec tryExplore () =
+            let tryAheadThenTurn turnTo = seq {
                 if isValidMove() then
                     yield move()
-                    yield! tryMove()
-                do turn()
-            do turn()
-            do turn()
-            yield move()
-            do turn()
-            do turn()
-        }
+                    yield! tryExplore ()
+                    do turnTo |> getClockwiseSteps |> fun s -> (((s + 4) % 4) - 2) |> turn 
+                else
+                    do turnTo |> getClockwiseSteps |> turn
+            }
 
-        tryMove ()
+            seq {
+                yield! tryAheadThenTurn Left
+                yield! tryAheadThenTurn Around
+                yield! tryAheadThenTurn Right
+                yield move()
+            }
+
+        tryExplore ()
 
     interface IMazeSolver with
         member this.Init(refMaze:IMaze, refMouse:IMouse) =
