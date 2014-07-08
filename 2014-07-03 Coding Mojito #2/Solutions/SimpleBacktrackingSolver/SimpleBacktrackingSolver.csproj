@@ -35,9 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mazes.Core">
-      <HintPath>..\..\..\Mazes\Mazes.Core\bin\Debug\Mazes.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,11 +46,17 @@
   <ItemGroup>
     <Compile Include="Coordinates.cs" />
     <Compile Include="Direction.cs" />
-    <Compile Include="IDebuggingMouse.cs" />
+    <Compile Include="DebuggingMouse.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="PathNode.cs" />
     <Compile Include="SimpleBacktrackingSolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mazes\Mazes.Core\Mazes.Core.csproj">
+      <Project>{f1958351-b27a-45ce-8571-6e73f1abc7d1}</Project>
+      <Name>Mazes.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Mazes.Core;
 
 namespace Altnet.Katas.CodingMojito
@@ -15,19 +16,19 @@ namespace Altnet.Katas.CodingMojito
         public void TurnLeft()
         {
             mouse.TurnLeft();
-            Console.WriteLine("Turned left");
+            Debug.WriteLine("Turned left");
         }
 
         public void TurnRight()
         {
             mouse.TurnRight();
-            Console.WriteLine("Turned right");
+            Debug.WriteLine("Turned right");
         }
 
         public void Move()
         {
             mouse.Move();
-            Console.WriteLine("Moved");
+            Debug.WriteLine("Moved");
         }
     }
 }

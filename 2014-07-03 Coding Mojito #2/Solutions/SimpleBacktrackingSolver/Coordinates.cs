@@ -35,12 +35,12 @@ namespace Altnet.Katas.CodingMojito
 
         public bool IsEastOf(Coordinates other)
         {
-            return other.X < X;
+            return other.X > X;
         }
 
         public bool IsWestOf(Coordinates other)
         {
-            return other.X > X;
+            return other.X < X;
         }
 
         public bool IsNorthOf(Coordinates other)
@@ -51,6 +51,23 @@ namespace Altnet.Katas.CodingMojito
         public bool IsSouthOf(Coordinates other)
         {
             return other.Y > Y;
+        }
+
+        public Direction GetDirectionTo(Coordinates coordinates)
+        {
+            if (coordinates.IsEastOf(this))
+            {
+                return Direction.East;
+            }
+            if (coordinates.IsWestOf(this))
+            {
+                return Direction.West;
+            }
+            if (coordinates.IsNorthOf(this))
+            {
+                return Direction.North;
+            }
+            return Direction.South;
         }
 
         public override string ToString()

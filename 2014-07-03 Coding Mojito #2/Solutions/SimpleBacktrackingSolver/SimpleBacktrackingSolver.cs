@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Mazes.Core;
 
 namespace Altnet.Katas.CodingMojito
@@ -35,21 +37,24 @@ namespace Altnet.Katas.CodingMojito
             var node = new PathNode
             {
                 Coordinates = currentCoordinates,
-                Origin = new Move(currentDirection.GetOpposite(), origin),
+                Origin = new Move(origin == null ? null : origin.Coordinates.GetDirectionTo(currentCoordinates), origin),
             };
             FindOpenDirectionsOfNode(node);
             return node;
         }
 
+        private int turn;
+
         public void YourTurn()
         {
-            Console.WriteLine("At {0}, facing {1}", currentCoordinates, currentDirection);
+            Debug.WriteLine("Turn {0}. At {1}, facing {2}", ++turn, currentCoordinates, currentDirection);
             // Find out directions which are available (not blocked by a wall), and not the direction we are coming from
-			var nextMove = currentNode.OpenDirections.FirstOrDefault(n => !currentNode.RoutesTaken.ContainsKey(n));
+            var nextMove = currentNode.OpenDirections.FirstOrDefault(n => !currentNode.RoutesTaken.ContainsKey(n));
             if (nextMove != null)
             {
+                Debug.WriteLine("Turn {0}. Next move : {1}", turn, nextMove);
                 // Move and update state accordingly
-				Face(nextMove);
+                Face(nextMove);
                 Move();
                 var nextNode = UpdateNextNode();
                 currentNode.RoutesTaken.Add(currentDirection, nextNode);
@@ -57,6 +62,7 @@ namespace Altnet.Katas.CodingMojito
             }
             else
             {
+                Debug.WriteLine("Turn {0}. Backtracking", turn);
                 GoBack();
             }
         }
