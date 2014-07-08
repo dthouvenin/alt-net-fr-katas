@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Management.Instrumentation;
 using System.Text;
@@ -14,6 +15,8 @@ namespace Mazes.Runner
 {
     public partial class MainForm : Form, IMazeWatcher
     {
+        private readonly string builderPath;
+        private readonly string solverPath;
         private IMazeBuilder builder;
         private IMazeSolver solver;
         private Maze maze;
@@ -32,6 +35,28 @@ namespace Mazes.Runner
             Drawer.Height = drawPanel.ClientSize.Height - 10;
             Drawer.Anchor = AnchorStyles.Left|AnchorStyles.Top|AnchorStyles.Bottom|AnchorStyles.Right;
             Drawer.Parent = drawPanel;            
+        }
+
+        public MainForm(string builderPath, string solverPath) : this()
+        {
+            this.builderPath = Path.GetFullPath(builderPath);
+            this.solverPath = Path.GetFullPath(solverPath);
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            if (builderPath != null)
+            {
+                LoadBuilder(builderPath);
+                BuildMaze();
+            }
+
+            if (solverPath != null)
+            {
+                LoadSolver(solverPath);
+                EnableActionButtons(true);
+            }
         }
 
         private void ClearLog()
@@ -85,20 +110,26 @@ namespace Mazes.Runner
             {
                 if (openFileDialog1.ShowDialog() != DialogResult.OK)
                     return;
-                try
-                {
-                    var newBuilder = Loader.Load<IMazeBuilder>(openFileDialog1.FileName);
-                    mazeIsBuilt = false;
-                    builder = newBuilder;
-                }
-                catch (InstanceNotFoundException)
-                {
-                    MessageBox.Show("This assembly doesn't seem to contain a public IMazeBuilder implementation");
-                }
+
+                LoadBuilder(openFileDialog1.FileName);
             }
             finally
             {
                 EnableActionButtons(true);
+            }
+        }
+
+        private void LoadBuilder(string fileName)
+        {
+            try
+            {
+                var newBuilder = Loader.Load<IMazeBuilder>(fileName);
+                mazeIsBuilt = false;
+                builder = newBuilder;
+            }
+            catch (InstanceNotFoundException)
+            {
+                MessageBox.Show("This assembly doesn't seem to contain a public IMazeBuilder implementation");
             }
         }
 
@@ -118,15 +149,7 @@ namespace Mazes.Runner
             {
                 if (openFileDialog1.ShowDialog() != DialogResult.OK)
                     return;
-                try
-                {
-                    var newSolver = Loader.Load<IMazeSolver>(openFileDialog1.FileName);
-                    solver = newSolver;
-                }
-                catch (InstanceNotFoundException)
-                {
-                    MessageBox.Show("This assembly doesn't seem to contain a public IMazeSolver implementation");
-                }
+                LoadSolver(openFileDialog1.FileName);
             }
             finally
             {
@@ -134,7 +157,25 @@ namespace Mazes.Runner
             }
         }
 
+        private void LoadSolver(string fileName)
+        {
+            try
+            {
+                var newSolver = Loader.Load<IMazeSolver>(fileName);
+                solver = newSolver;
+            }
+            catch (InstanceNotFoundException)
+            {
+                MessageBox.Show("This assembly doesn't seem to contain a public IMazeSolver implementation");
+            }
+        }
+
         private void Build_Click(object sender, EventArgs e)
+        {
+            BuildMaze();
+        }
+
+        private void BuildMaze()
         {
             EnableActionButtons(false);
             try
