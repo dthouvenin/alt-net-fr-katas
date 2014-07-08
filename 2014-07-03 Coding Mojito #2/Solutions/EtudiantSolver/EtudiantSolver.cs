@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using Mazes.Core;
 
 namespace EtudiantSolver
 {
     public class EtudiantSolver : IMazeSolver
     {
-        private List<Position> alreadyVisitedList;
         private Position currentPosition;
-        // O gauche, 1 haut, 2 droite, 3 bas
-        private int direction;
-        private int turnWithoutMove;
+        private Direction direction;
+        private Direction incommingDirection;
         private IMaze maze;
         private IMouse mouse;
 
@@ -18,36 +15,23 @@ namespace EtudiantSolver
         {
             this.maze = maze;
             this.mouse = mouse;
-            this.currentPosition = new Position(0, 0);
-            this.alreadyVisitedList = new List<Position> {this.currentPosition};
+            this.currentPosition = new Position(0, 0, Direction.West) {IsVisited = true};
+            this.direction = this.incommingDirection = Direction.West;
+            Position.ClearCache();
         }
 
         public void YourTurn()
         {
+            RelativePosition frontPosition = GetFrontPosition();
+
             if (this.maze.CanIMove())
             {
-                var frontPosition = GetFrontPosition();
-                var exist = this.alreadyVisitedList.FirstOrDefault(c => c.IsEqual(frontPosition));
-                if (exist == null || this.turnWithoutMove > 3)
-                {
-                    this.currentPosition = frontPosition;
-                    this.mouse.Move();
-                    if (exist == null)
-                        this.alreadyVisitedList.Add(this.currentPosition);
-                    this.turnWithoutMove = 0;
-                }
-                else
-                {
-                    this.direction = (this.direction + 1)%4;
-                    this.mouse.TurnRight();
-                    this.turnWithoutMove++;
-                }
+                MoveToBestDirection(frontPosition);
             }
             else
             {
-                this.direction = (this.direction + 1)%4;
-                this.mouse.TurnRight();
-                this.turnWithoutMove++;
+                frontPosition.IsWall = true;
+                MoveToBestDirection(frontPosition);
             }
         }
 
@@ -59,15 +43,74 @@ namespace EtudiantSolver
         {
         }
 
-        private Position GetFrontPosition()
+        private void MoveToBestDirection(RelativePosition frontPosition)
         {
-            return this.direction == 0
-                ? new Position(this.currentPosition.X - 1, this.currentPosition.Y)
-                : (this.direction == 1
-                    ? new Position(this.currentPosition.X, this.currentPosition.Y + 1)
-                    : (this.direction == 2
-                        ? new Position(this.currentPosition.X + 1, this.currentPosition.Y)
-                        : new Position(this.currentPosition.X, this.currentPosition.Y - 1)));
+            int moves = this.currentPosition.GetBestDirectionToGo(this.direction, this.incommingDirection);
+
+            if (moves > 0)
+            {
+                for (int i = 0; i < moves; i++)
+                {
+                    this.direction = (Direction) (((int) this.direction + 1)%4);
+                    this.mouse.TurnRight();
+                }
+            }
+            else if (moves < 0)
+            {
+                for (int i = 0; i < Math.Abs(moves); i++)
+                {
+                    this.direction = (Direction) (((int) this.direction - 1)%4);
+                    this.mouse.TurnLeft();
+                }
+            }
+            else
+            {
+                this.currentPosition = frontPosition.Position;
+                this.currentPosition.IsVisited = true;
+                this.incommingDirection = this.direction;
+                this.mouse.Move();
+            }
+        }
+
+        private RelativePosition GetFrontPosition()
+        {
+            RelativePosition relativePosition = null;
+
+            switch (this.direction)
+            {
+                case Direction.North:
+                    relativePosition = this.currentPosition.NorthPosition ??
+                                       (this.currentPosition.NorthPosition =
+                                           new RelativePosition(this.currentPosition.GetPosition(this.currentPosition.X,
+                                               this.currentPosition.Y + 1,
+                                               this.direction)));
+                    break;
+                case Direction.East:
+                    relativePosition = this.currentPosition.EastPosition ??
+                                       (this.currentPosition.EastPosition =
+                                           new RelativePosition(
+                                               this.currentPosition.GetPosition(this.currentPosition.X + 1,
+                                                   this.currentPosition.Y,
+                                                   this.direction)));
+                    break;
+                case Direction.South:
+                    relativePosition = this.currentPosition.SouthPosition ??
+                                       (this.currentPosition.SouthPosition =
+                                           new RelativePosition(this.currentPosition.GetPosition(this.currentPosition.X,
+                                               this.currentPosition.Y - 1,
+                                               this.direction)));
+                    break;
+                case Direction.West:
+                    relativePosition = this.currentPosition.WestPosition ??
+                                       (this.currentPosition.WestPosition =
+                                           new RelativePosition(
+                                               this.currentPosition.GetPosition(this.currentPosition.X - 1,
+                                                   this.currentPosition.Y,
+                                                   this.direction)));
+                    break;
+            }
+
+            return relativePosition;
         }
     }
 }
