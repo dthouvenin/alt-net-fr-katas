@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleBacktrackingSolver", "SimpleBacktrackingSolver\SimpleBacktrackingSolver.csproj", "{3AC9F1B2-F471-476F-84AE-8B78E2237C70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleBacktrackingSolver", "SimpleBacktrackingSolver.csproj", "{3AC9F1B2-F471-476F-84AE-8B78E2237C70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mazes.Core", "..\Mazes\Mazes.Core\Mazes.Core.csproj", "{F1958351-B27A-45CE-8571-6E73F1ABC7D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mazes.Core", "..\..\Mazes\Mazes.Core\Mazes.Core.csproj", "{F1958351-B27A-45CE-8571-6E73F1ABC7D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
