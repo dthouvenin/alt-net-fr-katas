@@ -39,8 +39,11 @@ namespace Mazes.Runner
 
         public MainForm(string builderPath, string solverPath) : this()
         {
-            this.builderPath = Path.GetFullPath(builderPath);
-            this.solverPath = Path.GetFullPath(solverPath);
+            if (!string.IsNullOrEmpty(builderPath))
+                this.builderPath = Path.GetFullPath(builderPath);
+
+            if (!string.IsNullOrEmpty(solverPath))
+                this.solverPath = Path.GetFullPath(solverPath);
         }
 
         protected override void OnLoad(EventArgs e)
