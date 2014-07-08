@@ -24,7 +24,7 @@
     <DocumentationFile>bin\Debug\PierreFSharp.XML</DocumentationFile>
     <StartAction>Program</StartAction>
     <StartProgram>C:\Code\GitHub\alt-net-fr-katas\2014-07-03 Coding Mojito #2\Mazes\WindowsFormsApplication1\bin\Debug\Mazes.Runner.exe</StartProgram>
-    <StartArguments>"C:\Code\GitHub\alt-net-fr-katas\2014-07-03 Coding Mojito #2\Demo\SampleMazeBuilder.dll" "C:\Code\GitHub\alt-net-fr-katas\2014-07-03 Coding Mojito #2\Solutions\PierreFSharp\bin\Debug\PierreFSharp.dll"</StartArguments>
+    <StartArguments>"C:\Code\GitHub\alt-net-fr-katas\2014-07-03 Coding Mojito #2\Solutions\PierreFSharp\bin\Debug\PierreFSharp.dll" "C:\Code\GitHub\alt-net-fr-katas\2014-07-03 Coding Mojito #2\Solutions\PierreFSharp\bin\Debug\PierreFSharp.dll"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Solver.fs" />
+    <Compile Include="Builder.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
