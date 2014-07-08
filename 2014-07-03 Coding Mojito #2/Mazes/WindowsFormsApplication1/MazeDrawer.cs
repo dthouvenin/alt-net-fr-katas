@@ -25,6 +25,11 @@ namespace Mazes.Runner
 
         public Size MazeSize { get; set; }
 
+        public MazeDrawer()
+        {
+            this.DoubleBuffered = true;
+        }
+
         protected override void OnSizeChanged(EventArgs e)
         {
             isPrepared = false;
