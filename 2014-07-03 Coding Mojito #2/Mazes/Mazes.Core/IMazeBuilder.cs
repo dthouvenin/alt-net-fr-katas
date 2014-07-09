@@ -12,8 +12,22 @@ namespace Mazes.Core
             X = x;
             Y = y;
         }
+
         public readonly int X;
         public readonly int Y;
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            var p2 = obj as Position?;
+            if (!p2.HasValue) return false;
+            return (this.X == p2.Value.X) && (this.Y == p2.Value.Y);
+        }
+
+        public override int GetHashCode()
+        {
+            return (this.X * 37) ^ (this.Y);
+        }
     }
 
     public interface IMazeBuilder

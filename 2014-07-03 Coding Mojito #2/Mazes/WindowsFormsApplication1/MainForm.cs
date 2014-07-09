@@ -237,9 +237,9 @@ namespace Mazes.Runner
             timer1.Enabled = false;
             maze.Reset();
             drawPanel.BackColor = Color.Black;
+            Drawer.ClearPositions();
             Drawer.DrawMouse(builder.MazeStartPosition, Direction.East);
             Drawer.Invalidate();
         }
-
     }
 }

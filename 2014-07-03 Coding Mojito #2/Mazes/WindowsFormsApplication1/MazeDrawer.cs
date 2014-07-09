@@ -18,6 +18,7 @@ namespace Mazes.Runner
         private bool isPrepared = false;
         private bool isMousePrepared = false;
         private List<Rectangle> Lines = new List<Rectangle>();
+        private HashSet<Position> VisitedPositions = new HashSet<Position>();
         public Position MousePosition { get; set; }
         public Direction MouseDirection { get; set; }
         private Bitmap background;
@@ -45,9 +46,11 @@ namespace Mazes.Runner
                 e.Graphics.FillRectangle(backBrush, ClientRectangle);
             }
             if (isPrepared)
+            {
                 e.Graphics.DrawImage(background, offset);
-            if (isMousePrepared)
+                PaintPositions(e.Graphics);
                 PaintMouse(e.Graphics);
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -154,10 +157,29 @@ namespace Mazes.Runner
             }
         }
 
+        private void PaintPositions(Graphics g)
+        {
+            var radius = pixelsPerSquare / 8;
+
+            using(var brush = new SolidBrush(Color.Beige))
+            {
+                foreach (var p in VisitedPositions)
+                {
+                    g.FillEllipse(
+                        brush,
+                        offset.X + p.X * pixelsPerSquare + pixelsPerSquare / 2 - radius,
+                        offset.Y + p.Y * pixelsPerSquare + pixelsPerSquare / 2 - radius,
+                        2 * radius,
+                        2 * radius);
+                }
+            }
+        }
+
         public void StartLayout(int width, int height)
         {
             MazeSize = new Size(width, height);
             Lines.Clear();
+            VisitedPositions.Clear();
             isPrepared = false;
         }
 
@@ -176,8 +198,14 @@ namespace Mazes.Runner
         {
             MousePosition = position;
             MouseDirection = direction;
+            VisitedPositions.Add(position);
             PrepareMouse();
             Invalidate();
+        }
+
+        public void ClearPositions()
+        {
+            VisitedPositions.Clear();
         }
     }
 }
