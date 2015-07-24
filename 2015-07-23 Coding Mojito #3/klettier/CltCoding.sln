@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingCardGame", "TradingCardGame\TradingCardGame.csproj", "{F4F13C55-B71C-4199-A611-FF007656B620}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradingCardGameTests", "TradingCardGameTests\TradingCardGameTests.csproj", "{A4C601BF-DD01-447D-8574-3498209C6105}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4F13C55-B71C-4199-A611-FF007656B620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4F13C55-B71C-4199-A611-FF007656B620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4F13C55-B71C-4199-A611-FF007656B620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4F13C55-B71C-4199-A611-FF007656B620}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4C601BF-DD01-447D-8574-3498209C6105}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4C601BF-DD01-447D-8574-3498209C6105}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4C601BF-DD01-447D-8574-3498209C6105}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4C601BF-DD01-447D-8574-3498209C6105}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
